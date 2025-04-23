@@ -173,6 +173,7 @@ import UserModification from "./Pages/UserModification";
 import ManageUserRoles from "./Pages/ManageUserRoles";
 import RegistrationPage from "./Pages/RegistrationPage";
 import NoticeBoard from "./Pages/NoticeBoard";
+import Dashboard2 from "./Pages/Dashboard2";
 
 function ProtectedLayout({ user }) {
   if (!user) return <Navigate to="/login" />;
@@ -196,7 +197,7 @@ function ProtectedLayout({ user }) {
           {/* Page Content (Scrollable) */}
           <div className="p-6 pt-20 h-screen w-full overflow-auto">
             <Routes>
-              <Route path="/dashboard" element={<Dashboard userName={user.name} />} />
+            <Route path="/dashboard" element={<Dashboard userName={user.name} />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
@@ -250,7 +251,8 @@ const NotFoundPage = () => (
 );
 
 function App() {
-  const [user, setUser] = useState(null); // Store the logged-in user state
+  const [user, setUser] = useState(localStorage.getItem("user")); // Store the logged-in user state
+
 
   return (
     <Router>

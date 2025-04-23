@@ -1,67 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import {emailLoginInitiate} from "../redux/actions/loginandsignup/emailLoginAction";
 
 function Login({ setUser }) {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showEmailDropdown, setShowEmailDropdown] = useState(false);
   const [showPasswordDropdown, setShowPasswordDropdown] = useState(false);
+  const [error, setError] = useState(""); // To show error messages
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const savedCredentials = JSON.parse(localStorage.getItem("userCredentials")) || {};
 
   const handleSelectEmail = (email) => {
     setFormData((prev) => ({ ...prev, email }));
-    setShowEmailDropdown(false); // Hide dropdown after selection
+    setShowEmailDropdown(false);
   };
 
   const handleSelectPassword = () => {
     setFormData((prev) => ({ ...prev, password: savedCredentials.password }));
-    setShowPasswordDropdown(false); // Hide dropdown after selection
+    setShowPasswordDropdown(false);
   };
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  const users = [
-    {
-      email: "vamsi@gmail.com",
-      password: "vamsi123",
-      name: "Vamsi",
-      role: "Super Admin"
-    },
-    {
-      email: "busadmin@gmail.com",
-      password: "bus123",
-      name: "BusAdmin",
-      role: "Bus Admin"
-    }
-  ];
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+   
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const { email, password } = formData;
 
-    const foundUser = users.find(
-      (user) => user.email === email && user.password === password
-    );
+    // Dispatch the async login action
+    dispatch(emailLoginInitiate(formData, navigate));
 
-    if (foundUser) {
-      localStorage.setItem("userCredentials", JSON.stringify({
-        email,
-        password,
-        role: foundUser.role
-      }));
-      setUser({ name: foundUser.name, role: foundUser.role });
-      navigate("/dashboard");
-    } else {
-      alert("Invalid email or password");
-    }
+    // Optionally update local storage to prefill credentials next time
+    localStorage.setItem("userCredentials", JSON.stringify({
+      email: formData.email,
+      password: formData.password
+    }));
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h2 className="mb-6 text-3xl font-semibold text-center text-gray-800">Welcome Back</h2>
+
+        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
 
         <form onSubmit={handleLogin} className="space-y-5">
           {/* Email Field */}
@@ -136,3 +123,7 @@ function Login({ setUser }) {
 }
 
 export default Login;
+
+
+
+
