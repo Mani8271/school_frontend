@@ -49,7 +49,7 @@ const Sidebar = () => {
     });
   };
 
-  const userCredentials = JSON.parse(localStorage.getItem("userCredentials"));
+  const userCredentials = JSON.parse(localStorage.getItem("user"));
   const role = userCredentials?.role;
 
   const isSuperAdmin = role === "Super Admin";

@@ -8,19 +8,26 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+import registerAction, { registerInitiate } from "../redux/actions/loginAndSignup/registerAction";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    mobile: "",
+    mobileNumber: "",
     userTitle: "",
     address: "",
     role: "",
     status: "",
     password: "",
     confirmPassword: "",
+    profilePicture: null, // ✅ Added profilePicture to the initial state
   });
 
   const [errors, setErrors] = useState({});
@@ -34,7 +41,7 @@ const RegistrationPage = () => {
     if (!formData.firstName) newErrors.firstName = "First name is required";
     if (!formData.lastName) newErrors.lastName = "Last name is required";
     if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.mobile) newErrors.mobile = "Mobile number is required";
+    if (!formData.mobileNumber) newErrors.mobileNumber = "Mobile number is required";
     if (!formData.userTitle) newErrors.userTitle = "User title is required";
     if (!formData.role) newErrors.role = "Role is required";
     if (!formData.status) newErrors.status = "Status is required";
@@ -46,12 +53,58 @@ const RegistrationPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (validateForm()) {
+  //     const data = new FormData();
+
+  //     for (let key in formData) {
+  //       data.append(key, formData[key]);
+  //     }
+
+  //     // ✅ Debug: log FormData content before sending
+  //     for (let pair of data.entries()) {
+  //       console.log(pair[0] + ": ", pair[1]);
+  //     }
+
+  //       console.log("dataaaa",data)
+  //     dispatch(registerInitiate(data, navigate));
+  //   }
+  // };
   const handleSubmit = (e) => {
     e.preventDefault();
+  
     if (validateForm()) {
-      console.log("Form Submitted", formData);
+      const data = new FormData();
+       console.log("formdata",formData)
+      // Append other form fields to FormData
+      for (let key in formData) {
+        // Skip the profilePicture as it's handled separately
+        if (key === 'profilePicture') continue;
+        data.append(key, formData[key]);
+      }
+  
+      // Add profilePicture to FormData if it exists
+      if (formData.profilePicture) {
+        console.log("Appending profile picture:", formData.profilePicture); // Debug: Check profile picture
+        data.append("profilePicture", formData.profilePicture);
+      }
+  
+      // Debug: Log the FormData content by iterating over it
+      for (let pair of data.entries()) {
+        console.log(pair[0] + ": ", pair[1]);
+      }
+  
+      // Dispatch the data
+      dispatch(registerInitiate(data, navigate));
     }
   };
+  
+  
+  
+  
+  
+  
 
   return (
     <Container maxWidth="sm">
@@ -61,7 +114,6 @@ const RegistrationPage = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            {/* First Name */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -73,8 +125,6 @@ const RegistrationPage = () => {
                 helperText={errors.firstName}
               />
             </Grid>
-
-            {/* Last Name */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -86,8 +136,6 @@ const RegistrationPage = () => {
                 helperText={errors.lastName}
               />
             </Grid>
-
-            {/* Email */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -100,22 +148,18 @@ const RegistrationPage = () => {
                 helperText={errors.email}
               />
             </Grid>
-
-            {/* Mobile */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Mobile Number"
-                name="mobile"
+                name="mobileNumber"
                 type="tel"
-                value={formData.mobile}
+                value={formData.mobileNumber}
                 onChange={handleChange}
-                error={!!errors.mobile}
-                helperText={errors.mobile}
+                error={!!errors.mobileNumber}
+                helperText={errors.mobileNumber}
               />
             </Grid>
-
-            {/* User Title */}
             <Grid item xs={12}>
               <TextField
                 select
@@ -132,8 +176,6 @@ const RegistrationPage = () => {
                 <MenuItem value="Miss">Miss</MenuItem>
               </TextField>
             </Grid>
-
-            {/* Address */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -145,8 +187,6 @@ const RegistrationPage = () => {
                 onChange={handleChange}
               />
             </Grid>
-
-            {/* Role */}
             <Grid item xs={12}>
               <TextField
                 select
@@ -162,8 +202,6 @@ const RegistrationPage = () => {
                 <MenuItem value="Admin">Admin</MenuItem>
               </TextField>
             </Grid>
-
-            {/* Status */}
             <Grid item xs={12}>
               <TextField
                 select
@@ -179,8 +217,24 @@ const RegistrationPage = () => {
                 <MenuItem value="Inactive">Inactive</MenuItem>
               </TextField>
             </Grid>
+            <input
+  accept="image/*"
+  type="file"
+  name="profilePicture"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    console.log("Selected file:", file);  // Debug: Log selected file
+    setFormData({ ...formData, profilePicture: file });
+  }}
+/>
 
-            {/* Password */}
+            {formData.profilePicture && (
+              <img
+                src={URL.createObjectURL(formData.profilePicture)}
+                alt="Profile Preview"
+                style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+              />
+            )}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -193,8 +247,6 @@ const RegistrationPage = () => {
                 helperText={errors.password}
               />
             </Grid>
-
-            {/* Confirm Password */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -207,8 +259,6 @@ const RegistrationPage = () => {
                 helperText={errors.confirmPassword}
               />
             </Grid>
-
-            {/* Submit Button */}
             <Grid item xs={12}>
               <Button
                 type="submit"

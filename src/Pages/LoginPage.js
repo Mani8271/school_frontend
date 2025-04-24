@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import {emailLoginInitiate} from "../redux/actions/loginandsignup/emailLoginAction";
+import {emailLoginInitiate} from "../redux/actions/loginAndSignup/emailLoginAction";
 
 function Login({ setUser }) {
   const [formData, setFormData] = useState({ email: "", password: "" });

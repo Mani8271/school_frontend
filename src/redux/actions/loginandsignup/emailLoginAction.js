@@ -1,5 +1,5 @@
 import * as types from "../actionTypes";
-import { createEmailLoginApi } from "../../apis/loginandsignup/emailLoginApi";
+import { createEmailLoginApi } from "../../apis/loginAndSignup/emailLoginApi";
 
 // Action Creators
 export const createEmailLoginStart = (formData) => ({
@@ -28,15 +28,15 @@ export const emailLoginInitiate = (formData, navigate) => {
         dispatch(createEmailLoginSuccess(res));
         if (res.status === 200) {
           console.log("Navigating to")
-          const token = res?.data?.token; // Adjust based on actual API response
+          const token = res?.data?.token; 
           const user =res?.data?.user;
           console.log("user12",res?.data)
           if (token) {
             
             localStorage.setItem("token", `Bearer ${token}`);
             console.log("user",user)
-            localStorage.setItem("user",user)
-            
+            localStorage.setItem("user",JSON.stringify(user))
+             console.log("uu",localStorage.getItem("user"))
             console.log("token",token)
             navigate('/dashboard');
           }

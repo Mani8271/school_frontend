@@ -124,7 +124,7 @@
 
 // export default App;
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -175,7 +175,9 @@ import RegistrationPage from "./Pages/RegistrationPage";
 import NoticeBoard from "./Pages/NoticeBoard";
 import Dashboard2 from "./Pages/Dashboard2";
 
-function ProtectedLayout({ user }) {
+function ProtectedLayout() {
+  // console.log("uh",user)
+  const user =localStorage.getItem("token")
   if (!user) return <Navigate to="/login" />;
 
   return (
@@ -251,7 +253,10 @@ const NotFoundPage = () => (
 );
 
 function App() {
-  const [user, setUser] = useState(localStorage.getItem("user")); // Store the logged-in user state
+  const [user, setUser] = useState(localStorage.getItem("token")); // Store the logged-in user state
+//   useEffect(()=>{
+// setUser(localStorage.getItem("user"))
+//   },[user])
 
 
   return (
