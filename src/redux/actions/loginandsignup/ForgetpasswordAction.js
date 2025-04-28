@@ -1,5 +1,5 @@
 import * as types from "../actionTypes";
-import { forgotPasswordApi } from "../../apis/loginAndSignup/forgotPasswordApi"; // You need to create this API function
+import { forgotPasswordApi } from "../../apis/loginandsignup/forgotPasswordApi"; // You need to create this API function
 
 // Action Creators
 export const forgotPasswordStart = (email) => ({
@@ -18,7 +18,7 @@ export const forgotPasswordError = (error) => ({
 });
 
 // Thunk Action
-export const forgotPasswordInitiate = (formData, navigate) => {
+export const ForgetpasswordIntiate = (formData, navigate) => {
   console.log("formData to send:", formData);
   return function (dispatch) {
     dispatch(forgotPasswordStart(formData));
@@ -39,5 +39,5 @@ export const forgotPasswordInitiate = (formData, navigate) => {
 };
 
 export default {
-  forgotPasswordInitiate,
+    ForgetpasswordIntiate,
 };

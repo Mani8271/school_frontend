@@ -1,18 +1,23 @@
 import { combineReducers } from "redux";
-import emailLoginReducer from "./loginAndSignup/emailLoginReducer";
-import registerReducer from "./loginAndSignup/registerReducer";
-import forgotPasswordReducer from "./loginAndSignup/forgotPasswordReducer";
+import registerReducer from "./loginandsignup/registerReducer";
+import forgotPasswordReducer from "./loginandsignup/forgotPasswordReducer";
+import LoginwithemailReducer from "./loginandsignup/LoginwithemailReducer";
+import AddstudentReducer from "./students/addstudentReducer";
+import GetuserprofileReducer from "./userprofile/getuserprofileReducer";
+
 
 
 
 
 const rootReducer = combineReducers({
   // login and signup flow ...
-  emaillogindata: emailLoginReducer,
+  emaillogindata: LoginwithemailReducer,
   registerdata: registerReducer,
   forgotPasswordData: forgotPasswordReducer,
- 
-  
-  
+  //  students
+  addstudent: AddstudentReducer,
+  // user profile
+  userdetails: GetuserprofileReducer
+
 });
 export default rootReducer;

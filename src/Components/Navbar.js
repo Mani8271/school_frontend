@@ -106,6 +106,9 @@ const Navbar = ({ profileImage, userName }) => {
   const handleProfileMenuClose = () => setAnchorEl(null);
   const handleLogout = () => {
     console.log("Logged out");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userCredentials');
     navigate("/login"); // Redirect to login
   };
 

@@ -1,5 +1,5 @@
 import * as types from "../actionTypes";
-import { createEmailLoginApi } from "../../apis/loginAndSignup/emailLoginApi";
+import { createEmailLoginApi } from "../../apis/loginandsignup/emailLoginApi";
 
 // Action Creators
 export const createEmailLoginStart = (formData) => ({
@@ -18,7 +18,7 @@ export const createEmailLoginError = (error) => ({
 });
 
 
-export const emailLoginInitiate = (formData, navigate) => {
+export const LoginwithemailInitiate = (formData, navigate) => {
   return function (dispatch) {
     const payload = { ...formData };
     dispatch(createEmailLoginStart(payload));
@@ -48,6 +48,6 @@ export const emailLoginInitiate = (formData, navigate) => {
   };
 };
 
-export default {
-  emailLoginInitiate,
+export default {    
+    LoginwithemailInitiate
 };

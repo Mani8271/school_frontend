@@ -1,28 +1,27 @@
 import * as types from "../../actions/actionTypes";
 const initialState = {
-  createEmailLoginDetails: {
-    users: [],
-    token: null,
+  userdetails: {
+    user: [],
     loading: false,
   },
 };
-const emailLoginReducer = (
-  state = initialState.createEmailLoginDetails,
+const GetuserprofileReducer = (
+  state = initialState.userdetails,
   action
 ) => {
   switch (action.type) {
-    case types.EMAIL_LOGIN_START:
+    case types.GET_USER_PROFILE_START:
       // console.log('respin reducer', state);
       return {
         ...state,
         loading: true,
       };
-    case types.EMAIL_LOGIN_SUCCESS:
+    case types.GET_USER_PROFILE_SUCCESS:
       return {
         ...state,
         loading: false,
       };
-    case types.EMAIL_LOGIN_ERROR:
+    case types.GET_USER_PROFILE_ERROR:
       return {
         ...state,
         loading: false,
@@ -32,4 +31,4 @@ const emailLoginReducer = (
       return state;
   }
 };
-export default emailLoginReducer;
+export default GetuserprofileReducer;

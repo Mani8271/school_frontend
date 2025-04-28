@@ -177,13 +177,13 @@ import Dashboard2 from "./Pages/Dashboard2";
 
 function ProtectedLayout() {
   // console.log("uh",user)
-  const user =localStorage.getItem("token")
+  const user = localStorage.getItem("token")
   if (!user) return <Navigate to="/login" />;
-
+  const profileImage = JSON.parse(localStorage.getItem('user'));
   return (
     <BranchProvider> {/* 🔥 Wrap entire layout with BranchProvider */}
       <div className="flex overflow-hidden">
-        
+
         {/* Sidebar (Fixed) */}
         <div className="w-60 min-h-screen bg-gray-900 shadow-lg">
           <Sidebar />
@@ -193,13 +193,13 @@ function ProtectedLayout() {
         <div className="flex-1 flex flex-col bg-gray-100 min-w-0">
           {/* Navbar (Fixed at the Top, Doesn't Extend into Sidebar) */}
           <div className="fixed top-0 left-60 right-0 z-50 bg-gray-900 text-white shadow-md">
-            <Navbar />
+            <Navbar profileImage={profileImage?.profilePicture} userName={profileImage?.firstName}/>
           </div>
 
           {/* Page Content (Scrollable) */}
           <div className="p-6 pt-20 h-screen w-full overflow-auto">
             <Routes>
-            <Route path="/dashboard" element={<Dashboard userName={user.name} />} />
+              <Route path="/dashboard" element={<Dashboard userName={user.name} />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
@@ -254,9 +254,9 @@ const NotFoundPage = () => (
 
 function App() {
   const [user, setUser] = useState(localStorage.getItem("token")); // Store the logged-in user state
-//   useEffect(()=>{
-// setUser(localStorage.getItem("user"))
-//   },[user])
+  //   useEffect(()=>{
+  // setUser(localStorage.getItem("user"))
+  //   },[user])
 
 
   return (
