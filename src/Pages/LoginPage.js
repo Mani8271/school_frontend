@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { useDispatch } from "react-redux";
-import {emailLoginInitiate} from "../redux/actions/loginAndSignup/emailLoginAction";
+import { LoginwithemailInitiate } from "../redux/actions/loginandsignup/LoginwithemailAction";
 
 function Login({ setUser }) {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -34,7 +33,7 @@ function Login({ setUser }) {
     e.preventDefault();
 
     // Dispatch the async login action
-    dispatch(emailLoginInitiate(formData, navigate));
+    dispatch(LoginwithemailInitiate(formData, navigate));
 
     // Optionally update local storage to prefill credentials next time
     localStorage.setItem("userCredentials", JSON.stringify({

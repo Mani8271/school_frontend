@@ -1,5 +1,5 @@
 import * as types from "../actionTypes";
-import { registerApi } from "../../apis/loginAndSignup/registerApi";
+import { registerApi } from "../../apis/loginandsignup/registerApi"; // You need to create this API function
 
 // Action Creators
 export const createRegisterStart = (formData) => ({

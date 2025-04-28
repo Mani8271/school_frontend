@@ -83,13 +83,22 @@
 
 // export default Profile;
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Typography, Box, Avatar, IconButton, Modal, TextField, Button, MenuItem } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { useDispatch, useSelector } from 'react-redux';
+import { GetuserprofileInitiate } from '../redux/actions/userprofile/getprofiledataAction';
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(GetuserprofileInitiate());
+  }, [dispatch])
+  const userdata = useSelector((state) => state?.userdetails);
+  console.log("userdata", userdata)
   const [profile, setProfile] = useState({
     profileImage: "https://thumbs.dreamstime.com/b/profile-picture-caucasian-male-employee-posing-office-happy-young-worker-look-camera-workplace-headshot-portrait-smiling-190186649.jpg",
     name: "Vamsi Krishna",
@@ -100,7 +109,7 @@ const Profile = () => {
     email: "vamsi@gmail.com"
   });
   const [editProfile, setEditProfile] = useState({ ...profile });
-  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChange = (e) => setEditProfile({ ...editProfile, [e.target.name]: e.target.value });
@@ -109,7 +118,7 @@ const Profile = () => {
     if (file) setEditProfile({ ...editProfile, profileImage: URL.createObjectURL(file) });
   };
   const handleSave = () => { setProfile(editProfile); handleClose(); };
-  
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">

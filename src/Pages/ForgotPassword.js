@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { FaGoogle, FaFacebook, FaInstagram } from 'react-icons/fa';
-import { forgotPasswordInitiate } from "../redux/actions/loginAndSignup/forgotPasswordAction";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { ForgetpasswordIntiate } from "../redux/actions/loginandsignup/ForgetpasswordAction";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const ForgotPassword = () => {
 
   const ForgotPasswordHandler = (event) => {
     event.preventDefault();
-    dispatch(forgotPasswordInitiate({ email: email.trim().toLowerCase(), newPassword: New_Password }, navigate));
+    dispatch(ForgetpasswordIntiate({ email: email.trim().toLowerCase(), newPassword: New_Password }, navigate));
     setEmail("");
     setPassword("");
     setConfirmPassword("");

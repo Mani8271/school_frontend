@@ -8,9 +8,9 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import registerAction, { registerInitiate } from "../redux/actions/loginAndSignup/registerAction";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { registerInitiate } from "../redux/actions/loginandsignup/registerAction";
 
 const RegistrationPage = () => {
   const navigate = useNavigate();
