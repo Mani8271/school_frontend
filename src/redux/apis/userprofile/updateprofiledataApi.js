@@ -1,11 +1,11 @@
 import API from "../../../API/API";
 const api = new API();
-const endPoint = "systemUsers/profile";
+const endPoint = "systemUsers/user-update";
 
-export const getprofiledataApi = async () => {
+export const updateprofiledataApi = async (formData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const result = await api.get(endPoint);
+      const result = await api.patch(`${endPoint}`, formData);
       console.log("Forgot Password API response:", result);
       resolve(result);
     } catch (error) {

@@ -17,14 +17,18 @@ export const getuserprofileError = (error) => ({
 });
 
 // Thunk Action to initiate registration
+let isProfileFetched = false;
+
 export const GetuserprofileInitiate = () => {
     return function (dispatch) {
+        if (isProfileFetched) return;
+        isProfileFetched = true;
         dispatch(getuserprofileStart());
         getprofiledataApi()
             .then((res) => {
                 dispatch(getuserprofileSuccess(res));
                 if (res.status === 200) {
-                    console.log("i am response in add student intiate", res)
+                    console.log("i am response in add student intiate", res);
                 }
             })
             .catch((error) => {
@@ -32,7 +36,6 @@ export const GetuserprofileInitiate = () => {
             });
     };
 };
-
 export default {
     GetuserprofileInitiate,
 };

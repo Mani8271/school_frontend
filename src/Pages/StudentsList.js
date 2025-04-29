@@ -56,8 +56,9 @@ const StudentsList = () => {
   const [editingStudent, setEditingStudent] = useState(null); // Track which student is being edited
   const [newStudent, setNewStudent] = useState({
     id: "", name: "", rollno: "", gender: "", bloodGroup: "", parentName: "", relation: "", classNum: "", section: "", address: "", city: "",
-    dob: "", email: "", mobile: "",
+    dob: "", email: "", mobile: "", ProfilePicture: null
   });
+  console.log("newStudent?.ProfilePicture", newStudent?.ProfilePicture)
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const [sectionQuery, setSectionQuery] = useState("");
   const [classFilter, setClassFilter] = useState("");
@@ -139,6 +140,8 @@ const StudentsList = () => {
     formdata.append("dob", newStudent.dob);
     formdata.append("email", newStudent.email);
     formdata.append("mobile", newStudent.mobile);
+    formdata.append("ProfilePicture", newStudent.ProfilePicture);
+
     if (formdata) {
       dispatch(AddStudentInitiate(formdata))
     }
@@ -379,6 +382,25 @@ const StudentsList = () => {
             {/* Scrollable Form Content */}
             <div className="p-6 overflow-y-auto flex-1">
               <form>
+                {/* image */}
+                <input
+                  type="file"
+                  name="ProfilePicture"
+                  onChange={(e) =>
+                    setNewStudent((prev) => ({
+                      ...prev,
+                      ProfilePicture: e.target.files[0], // Capture the file object
+                    }))
+                  }
+                />
+
+                {newStudent.ProfilePicture && (
+                  <img
+                    src={URL.createObjectURL(newStudent.ProfilePicture)}
+                    alt="Profile Preview"
+                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                  />
+                )}
                 {/* Dynamic Form Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
@@ -607,3 +629,6 @@ const StudentsList = () => {
 };
 
 export default StudentsList;
+
+
+

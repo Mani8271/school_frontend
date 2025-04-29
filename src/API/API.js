@@ -11,6 +11,7 @@ const METHOD = {
   POST: "post",
   PUT: "put",
   DELETE: "delete",
+  PATCH: "patch",
 };
 
 /*
@@ -44,6 +45,14 @@ class API {
   put(url, data) {
     return new Promise((resolve, reject) => {
       this.api(METHOD.PUT, url, data)
+        .then((response) => resolve(response))
+        .catch((error) => console.log(error));
+    });
+  }
+
+  patch(url, data) {
+    return new Promise((resolve, reject) => {
+      this.api(METHOD.PATCH, url, data)
         .then((response) => resolve(response))
         .catch((error) => console.log(error));
     });
