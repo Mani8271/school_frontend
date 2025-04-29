@@ -73,38 +73,38 @@ const RegistrationPage = () => {
   // };
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     if (validateForm()) {
       const data = new FormData();
-       console.log("formdata",formData)
+      console.log("formdata", formData)
       // Append other form fields to FormData
       for (let key in formData) {
         // Skip the profilePicture as it's handled separately
         if (key === 'profilePicture') continue;
         data.append(key, formData[key]);
       }
-  
+
       // Add profilePicture to FormData if it exists
       if (formData.profilePicture) {
         console.log("Appending profile picture:", formData.profilePicture); // Debug: Check profile picture
         data.append("profilePicture", formData.profilePicture);
       }
-  
+
       // Debug: Log the FormData content by iterating over it
       for (let pair of data.entries()) {
         console.log(pair[0] + ": ", pair[1]);
       }
-  
+
       // Dispatch the data
       dispatch(registerInitiate(data, navigate));
     }
   };
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
 
   return (
     <Container maxWidth="sm">
@@ -218,15 +218,15 @@ const RegistrationPage = () => {
               </TextField>
             </Grid>
             <input
-  accept="image/*"
-  type="file"
-  name="profilePicture"
-  onChange={(e) => {
-    const file = e.target.files[0];
-    console.log("Selected file:", file);  // Debug: Log selected file
-    setFormData({ ...formData, profilePicture: file });
-  }}
-/>
+              accept="image/*"
+              type="file"
+              name="profilePicture"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                console.log("Selected file:", file);  // Debug: Log selected file
+                setFormData({ ...formData, profilePicture: file });
+              }}
+            />
 
             {formData.profilePicture && (
               <img

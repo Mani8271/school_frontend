@@ -4,6 +4,7 @@ import forgotPasswordReducer from "./loginandsignup/forgotPasswordReducer";
 import LoginwithemailReducer from "./loginandsignup/LoginwithemailReducer";
 import AddstudentReducer from "./students/addstudentReducer";
 import GetuserprofileReducer from "./userprofile/getuserprofileReducer";
+import UpdateuserprofileReducer from "./userprofile/updateuserprofileReducer";
 
 
 
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   //  students
   addstudent: AddstudentReducer,
   // user profile
-  userdetails: GetuserprofileReducer
+  userdetails: GetuserprofileReducer,
+  updateduserdetails: UpdateuserprofileReducer
 
 });
 export default rootReducer;
