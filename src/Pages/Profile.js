@@ -350,9 +350,9 @@ const Profile = () => {
             <TextField label="Address" name="address" value={editProfile.address} onChange={handleChange} fullWidth variant="outlined" />
             <TextField label="Mobile" name="mobile" value={editProfile.mobile} onChange={handleChange} fullWidth variant="outlined" />
             <TextField select label="Gender" name="gender" value={editProfile.gender} onChange={handleChange} fullWidth variant="outlined">
-              <MenuItem value="Male">Male</MenuItem>
-              <MenuItem value="Female">Female</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
+            <MenuItem value="Mr">Mr</MenuItem>
+            <MenuItem value="Miss">Mrs</MenuItem>
+            <MenuItem value="Other">Miss</MenuItem>
             </TextField>
             <TextField label="Email" name="email" value={editProfile.email} onChange={handleChange} fullWidth variant="outlined" />
           </Box>

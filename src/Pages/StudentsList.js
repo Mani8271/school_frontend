@@ -127,17 +127,18 @@ const StudentsList = () => {
     console.log(newStudent)
     const formdata = new FormData();
     formdata.append("id", newStudent.id);
-    formdata.append("name", newStudent.name);
+    formdata.append("studentName", newStudent.name);
     formdata.append("rollno", newStudent.rollno);
-    formdata.append("gender", newStudent.gender);
+    formdata.append("gender", newStudent.gender.toLowerCase());
+
     formdata.append("bloodGroup", newStudent.bloodGroup);
     formdata.append("parentName", newStudent.parentName);
     formdata.append("relation", newStudent.relation);
-    formdata.append("classNum", newStudent.classNum);
-    formdata.append("section", newStudent.section);
+    formdata.append("class", newStudent.classNum);
+    formdata.append("section", newStudent.section.toLowerCase());
     formdata.append("address", newStudent.address);
     formdata.append("city", newStudent.city);
-    formdata.append("dob", newStudent.dob);
+    formdata.append("dateofbirth", newStudent.dob);
     formdata.append("email", newStudent.email);
     formdata.append("mobile", newStudent.mobile);
     formdata.append("ProfilePicture", newStudent.ProfilePicture);

@@ -73,7 +73,8 @@ class API {
       let axiosConfig = {};
       axiosConfig.method = method;
       axiosConfig.url = this.baseURL + url;
-      axiosConfig.headers = this.setHeaders(data);  
+      axiosConfig.headers = this.setHeaders(data);
+      axiosConfig.withCredentials = true;  
 
       if (data) {
         axiosConfig.data = data;  
