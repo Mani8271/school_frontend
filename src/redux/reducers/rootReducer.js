@@ -7,6 +7,8 @@ import GetuserprofileReducer from "./userprofile/getuserprofileReducer";
 import UpdateuserprofileReducer from "./userprofile/updateuserprofileReducer";
 import AddClassReducer from "./class/addClassReducer";
 import GetAllClassesReducer from "./class/getAllClassesReducer";
+import AddClassTimetableReducer from "./class/addClassTimetableReducer";
+import GetClassTimetableReducer from "./class/getClassTimetableReducer";
 
 
 
@@ -24,7 +26,9 @@ const rootReducer = combineReducers({
   updateduserdetails: UpdateuserprofileReducer,
   //class
   addclass: AddClassReducer,
-  getclasses: GetAllClassesReducer
+  getclasses: GetAllClassesReducer,
+  addtimetable: AddClassTimetableReducer,
+  getclasstimetable: GetClassTimetableReducer
 
 });
 export default rootReducer;

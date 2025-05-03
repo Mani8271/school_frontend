@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 import { Select, MenuItem, InputLabel, FormControl } from "@mui/material"; // Material UI imports
 import { useBranch } from "../Pages/Branches"; // Assuming branch selection is managed globally
+import { AddClassTimetableInitiate } from "../redux/actions/class/addClasstimetableAction";
+import { useDispatch, useSelector } from "react-redux";
+import {getClassTimetableInitiate}  from "../redux/actions/class/getClassTimetableAction";
+import Loader from "../Components/loader";
+import { deleteClassTimetableInitiate } from "../redux/actions/class/deleteClassTimetableAction";
+import  { UpdateClassTimetableInitiate } from "../redux/actions/class/updateClassTimetableAction";
 
 const ClassTimeTable = () => {
   const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
   const { selectedBranch } = useBranch(); // Get the selected branch
   const [modalData, setModalData] = useState({
     class: "", section: "", period1: "",
@@ -18,229 +25,137 @@ const ClassTimeTable = () => {
     break3: "",
     period7: "",
   });
-  const [timetableData, setTimetableData] = useState([
-    {
-      class: "Class 1",
-      section: "A",
-      period1: "Math",
-      period2: "Science",
-      break1: "10:00 - 10:30",
-      period3: "English",
-      period4: "History",
-      break2: "12:00 - 12:30",
-      period5: "Geography",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 1",
-      section: "B",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "Science",
-      period4: "History",
-      break2: "12:00 - 12:30",
-      period5: "Geography",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 2",
-      section: "A",
-      period1: "Math",
-      period2: "History",
-      break1: "10:00 - 10:30",
-      period3: "English",
-      period4: "Science",
-      break2: "12:00 - 12:30",
-      period5: "Geography",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 3",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 2",
-      section: "A",
-      period1: "Math",
-      period2: "History",
-      break1: "10:00 - 10:30",
-      period3: "English",
-      period4: "Science",
-      break2: "12:00 - 12:30",
-      period5: "Geography",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 3",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 2",
-      section: "A",
-      period1: "Math",
-      period2: "History",
-      break1: "10:00 - 10:30",
-      period3: "English",
-      period4: "Science",
-      break2: "12:00 - 12:30",
-      period5: "Geography",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 3",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 4",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 5",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 6",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-    {
-      class: "Class 7",
-      section: "A",
-      period1: "Math",
-      period2: "English",
-      break1: "10:00 - 10:30",
-      period3: "History",
-      period4: "Geography",
-      break2: "12:00 - 12:30",
-      period5: "Science",
-      period6: "Art",
-      break3: "2:00 - 2:30",
-      period7: "PE",
-    },
-  ]);
+  const [timetableData, setTimetableData] = useState([]);
   const [classFilter, setClassFilter] = useState("");
   const [sectionFilter, setSectionFilter] = useState("");
   const [uniqueSections, setUniqueSections] = useState([]);
 
+
+  const { data: classTimetables, loading } = useSelector((state) => state.getclasstimetable);
+
+  useEffect(() => {
+    dispatch(getClassTimetableInitiate());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (Array.isArray(classTimetables) && classTimetables.length > 0) {
+      setTimetableData(classTimetables);
+      
+    }
+  }, [classTimetables]);
+  useEffect(() => {
+    console.log("Updated timetable data:", timetableData);
+  }, [timetableData]);
   // Pagination state
-  const [entriesCount, setEntriesCount] = useState(5); // Number of entries per page
+  const [entriesCount, setEntriesCount] = useState(1); // Number of entries per page
   const [currentPage, setCurrentPage] = useState(1); // Current page
 
   const totalPages = Math.ceil(timetableData.length / entriesCount); // Total pages based on data length
-  const branchData = {
-    "Main Branch": ["Class 1", "Class 2", "Class 3"],
-    "City Branch": ["Class 4", "Class 5"],
-    "Westside Branch": ["Class 6", "Class 7"]  // ✅ Correct
-  };
+  // const branchData = {
+  //   "Main Branch": ["Class 1", "Class 2", "Class 3"],
+  //   "City Branch": ["Class 4", "Class 5"],
+  //   "Westside Branch": ["Class 6", "Class 7"]  // ✅ Correct
+  // };
+
+  // const filteredData = timetableData.filter(
+  //   (data) => {
+  //     const isBranchMatch = branchData[selectedBranch]?.includes(data.class);
+  //     const isClassMatch = classFilter ? data.class === classFilter : true;
+  //     const isSectionMatch = sectionFilter ? data.section === sectionFilter : true;
   
+  //     console.log(`Filtering: Class: ${data.class}, Section: ${data.section}`);
+  //     console.log(`Is Branch Match: ${isBranchMatch}`);
+  //     console.log(`Is Class Match: ${isClassMatch}`);
+  //     console.log(`Is Section Match: ${isSectionMatch}`);
+      
+  //     return isBranchMatch && isClassMatch && isSectionMatch;
+  //   }
+  // );
   const filteredData = timetableData.filter(
     (data) =>
-      branchData[selectedBranch]?.includes(data.class) && // Filter by branch
       (classFilter ? data.class === classFilter : true) &&
       (sectionFilter ? data.section === sectionFilter : true)
   );
-  const uniqueClasses = branchData[selectedBranch] || [];
+  // const uniqueClasses = branchData[selectedBranch] || [];
+  const uniqueClasses = [...new Set(timetableData.map(item => item.class))];
 
   // Function to handle class selection and update the section dropdown
+  // const handleClassChange = (e) => {
+
+  //   const selectedClass = e.target.value;
+  //   setClassFilter(selectedClass);
+  //   setSectionFilter(""); // Reset section filter
+  //   const relatedSections = timetableData
+  //     .filter(
+  //       (data) =>
+  //         data.class === selectedClass &&
+  //         branchData[selectedBranch]?.includes(selectedClass)
+  //     )
+  //     .map((data) => data.section);
+  //   setUniqueSections([...new Set(relatedSections)]);
+  // };
+
   const handleClassChange = (e) => {
-    const selectedClass = e.target.value;
+     const selectedClass = e.target.value;
     setClassFilter(selectedClass);
     setSectionFilter(""); // Reset section filter
     const relatedSections = timetableData
-      .filter(
-        (data) =>
-          data.class === selectedClass &&
-          branchData[selectedBranch]?.includes(selectedClass)
-      )
-      .map((data) => data.section);
+    .filter((data) => data.class === selectedClass)
+    .map((data) => data.section);
     setUniqueSections([...new Set(relatedSections)]);
+    console.log("Selected Class:", selectedClass);
+    console.log("Related Sections:", relatedSections);
   };
 
+  
+
   // Function to handle form submission (adding or editing timetable)
+  // const handleModalSubmit = () => {
+
+  //   const existingIndex = timetableData.findIndex(
+  //     (data) =>
+  //       data.class === modalData.class && data.section === modalData.section
+  //   );
+  //   if (existingIndex >= 0) {
+  //     setTimetableData(
+  //       timetableData.map((data, index) =>
+  //         index === existingIndex ? modalData : data
+  //       )
+  //     );
+  //   } else {
+  //     setTimetableData([...timetableData, modalData]);
+  //     dispatch(AddClassTimetableInitiate(modalData));
+  //   }
+  //   setShowModal(false);
+  //   setModalData({
+  //     class: "",
+  //     section: "",
+  //     period1: "",
+  //     period2: "",
+  //     break1: "",
+  //     period3: "",
+  //     period4: "",
+  //     break2: "",
+  //     period5: "",
+  //     period6: "",
+  //     break3: "",
+  //     period7: "",
+  //   });
+  // };
   const handleModalSubmit = () => {
-    const existingIndex = timetableData.findIndex(
+    const existingEntry = timetableData.find(
       (data) =>
         data.class === modalData.class && data.section === modalData.section
     );
-    if (existingIndex >= 0) {
-      setTimetableData(
-        timetableData.map((data, index) =>
-          index === existingIndex ? modalData : data
-        )
-      );
+  
+    if (existingEntry && existingEntry._id) {
+      // It's an edit, so dispatch update with ID and updated data
+      dispatch(UpdateClassTimetableInitiate(existingEntry._id, modalData));
     } else {
-      setTimetableData([...timetableData, modalData]);
+      // It's a new entry, dispatch add
+      dispatch(AddClassTimetableInitiate(modalData));
     }
+  
     setShowModal(false);
     setModalData({
       class: "",
@@ -257,6 +172,7 @@ const ClassTimeTable = () => {
       period7: "",
     });
   };
+  
 
   // Paginate the filtered data based on the entries per page
   const paginatedData = filteredData.slice(
@@ -275,13 +191,16 @@ const ClassTimeTable = () => {
       setCurrentPage(newPage);
     }
   };
+  if(loading){
+    return <Loader/>
+  }
 
   return (
     <div className="p-4 min-h-screen overflow-x-auto">
       <div className="flex flex-wrap items-center justify-between mb-4">
         <h1 className="text-2xl font-bold text-gray-800">All Class Time Table</h1>
       </div>
- 
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           {/* Select Class Dropdown */}
@@ -320,7 +239,7 @@ const ClassTimeTable = () => {
             </Select>
           </FormControl>
         </div>
-  
+
         {/* Button */}
         <div className="flex justify-end sm:justify-start w-full sm:w-auto">
           <button
@@ -343,7 +262,7 @@ const ClassTimeTable = () => {
           onChange={handleEntriesChange}
           className="px-2 py-1 text-black bg-white border rounded w-[70px]"
         >
-          {[5, 10, 15, 20].map((count) => (
+          {[1, 2, 3, 4].map((count) => (
             <option key={count} value={count}>
               {count}
             </option>
@@ -352,9 +271,9 @@ const ClassTimeTable = () => {
       </div>
 
       {/* Table */}
-        <div className="w-full overflow-x-auto">
-          {/* <div className="w-full max-w-full overflow-x-auto border rounded-lg"> */}
-          <div className="min-w-max">
+      <div className="w-full overflow-x-auto">
+        {/* <div className="w-full max-w-full overflow-x-auto border rounded-lg"> */}
+        <div className="min-w-max">
           <table className="w-full bg-white text-sm sm:text-md ">
             <thead className="bg-gray-200">
               <tr>
@@ -402,7 +321,8 @@ const ClassTimeTable = () => {
                       className="text-red-600 hover:text-red-800 transition cursor-pointer"
                       onClick={() => {
                         if (window.confirm("Are you sure you want to delete this item?")) {
-                          setTimetableData(timetableData.filter((item) => item !== data));
+                          // setTimetableData(timetableData.filter((item) => item !== data));
+                          dispatch(deleteClassTimetableInitiate(data._id));
                         }
                       }}
                     >
@@ -414,7 +334,7 @@ const ClassTimeTable = () => {
             </tbody>
           </table>
           {/* </div> */}
-          </div>
+        </div>
       </div>
 
 
@@ -424,11 +344,10 @@ const ClassTimeTable = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`px-4 py-2 border transition ${
-            currentPage === 1
-              ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
-              : "text-gray-900 border-gray-400 hover:bg-gray-100"
-          }`}
+          className={`px-4 py-2 border transition ${currentPage === 1
+            ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
+            : "text-gray-900 border-gray-400 hover:bg-gray-100"
+            }`}
         >
           Previous
         </button>
@@ -441,11 +360,10 @@ const ClassTimeTable = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 border transition ${
-            currentPage === totalPages
-              ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
-              : "text-gray-900 border-gray-400 hover:bg-gray-100"
-          }`}
+          className={`px-4 py-2 border transition ${currentPage === totalPages
+            ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
+            : "text-gray-900 border-gray-400 hover:bg-gray-100"
+            }`}
         >
           Next
         </button>
