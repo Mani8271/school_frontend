@@ -17,18 +17,14 @@ export const createStudentError = (error) => ({
     payload: error,
 });
 
-// Thunk Action to initiate registration
-export const AddStudentInitiate = (formData) => {
+export const AddStudentInitiate = (formData, callback) => {
     return function (dispatch) {
-        
-
         dispatch(createStudentStart(formData));
-
         addstudentApi(formData)
             .then((res) => {
                 dispatch(createStudentSuccess(res));
                 if (res.status === 200) {
-
+                    callback(true)
                     console.log("i am response in add student intiate", res)
                 }
             })
@@ -37,7 +33,6 @@ export const AddStudentInitiate = (formData) => {
             });
     };
 };
-
 export default {
     AddStudentInitiate,
 };

@@ -2,63 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Upload, Add, Download, Edit, Delete, Close, NestCamWiredStand } from "@mui/icons-material";
 import { useBranch } from "../Pages/Branches";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AddStudentInitiate } from "../redux/actions/student/addstudentAction";
+import { getAllStudentsInitiate } from "../redux/actions/student/getstudentAction";
+import { UpdateStudentInitiate } from "../redux/actions/student/updatestudentAction";
+import { DeleteStudentInitiate } from "../redux/actions/student/deletestudentAction";
 
 const StudentsList = () => {
   const dispatch = useDispatch();
+  const { data: allstudents = [] } = useSelector((state) => state.getallstudents.students || {});
+  useEffect(() => {
+    dispatch(getAllStudentsInitiate());
+  }, [dispatch]);
+  console.log("i am all students", allstudents);
   // State to handle the student list and form visibility
-  const [students, setStudents] = useState([
-    {
-      id: "ST12345", name: "Ramya", rollno: "101", gender: "Female", parentName: "Raji", relation: "mother", classNum: 10, section: "A",
-      address: "123, Street", city: "Vizag", dob: "2008-05-14", bloodGroup: "B+", username: "ramya12345", password: "Ramya@123", email: "ramya@example.com", mobile: "8965741238", branch: "Main Branch",
-    },
-    {
-      id: "ST54321", name: "John", rollno: "102", gender: "Male", parentName: "Sunil", relation: "mother", classNum: 9, section: "B",
-      address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "A+", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "City Branch",
-    },
-    {
-      id: "ST12346", name: "Stev", rollno: "103", gender: "Male", parentName: "Srikanth", relation: "mother", classNum: 6, section: "B",
-      address: "14-7 Street", city: "Vizag", dob: "2012-05-14", bloodGroup: "AB+", username: "stev12345", password: "Stev@123", email: "stev@example.com", mobile: "8965741238", branch: "Westside Branch",
-    },
-    {
-      id: "ST54324", name: "John", rollno: "104", gender: "Male", parentName: "Sunil", relation: "mother", classNum: 9, section: "B",
-      address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "B-", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "Main Branch",
-    },
-    {
-      id: "ST54322", name: "John", rollno: "105", gender: "Male", parentName: "Sunil", relation: "mother", classNum: 9, section: "B",
-      address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "AB-", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "City Branch",
-    },
-    {
-      id: "ST54320", name: "John", rollno: "106", gender: "Male", parentName: "Sunil", relation: "mother", classNum: 9, section: "B",
-      address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "O+", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "Westside Branch",
-    },
-    {
-      id: "ST54323", name: "John", rollno: "107", gender: "Male", parentName: "Sunil", relation: "mother", classNum: 9, section: "A", address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "OB+", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "Main Branch",
-    },
-    {
-      id: "ST12111", name: "Stev", rollno: "108", gender: "Male", parentName: "Srikanth", relation: "Father", classNum: 6, section: "B", address: "14-7 Street", city: "Vizag", dob: "2012-05-14", bloodGroup: "OB-", username: "stev12345", password: "Stev@123", email: "ramya@example.com",
-      mobile: "8965741238", branch: "Main Branch"
-    },
-    {
-      id: "ST54112", name: "John", rollno: "109", gender: "Male", parentName: "Sunil", relation: "Father", classNum: 9, section: "A", address: "456 Avenue", city: "Vizag", dob: "2009-09-20", bloodGroup: "B+", username: "john12345", password: "John@123", email: "john@example.com", mobile: "9123456780", branch: "Main Branch"
-    },
-    {
-      id: "ST12113", name: "Ramya", rollno: "110", gender: "Female", parentName: "Raji", relation: "Sister", classNum: 10, section: "A", address: "123, Street", city: "Vizag", dob: "2008-05-14", bloodGroup: "AB+", username: "ramya12345", password: "Ramya@123", email: "ramya@example.com",
-      mobile: "8965741238", branch: "Main Branch"
-    },
-    {
-      id: "ST12114", name: "Ramya", rollno: "111", gender: "Female", parentName: "Raji", relation: "Sister", classNum: 10, section: "A", address: "123, Street", city: "Vizag", dob: "2008-05-14", bloodGroup: "B-", username: "ramya12345", password: "Ramya@123", email: "ramya@example.com",
-      mobile: "8965741238", branch: "Main Branch"
-    },
-  ]);
+
   const [formVisible, setFormVisible] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null); // Track which student is being edited
   const [newStudent, setNewStudent] = useState({
-    id: "", name: "", rollno: "", gender: "", bloodGroup: "", parentName: "", relation: "", classNum: "", section: "", address: "", city: "",
-    dob: "", email: "", mobile: "", ProfilePicture: null
+    _id: "", studentName: "", rollno: "", gender: "", bloodgroup: "", parentName: "", relation: "", class: "", section: "", address: "", city: "",
+    dateofbirth: "", email: "", mobile: "", ProfilePicture: null
   });
-  console.log("newStudent?.ProfilePicture", newStudent?.ProfilePicture)
+  console.log("editingStudent", editingStudent)
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const [sectionQuery, setSectionQuery] = useState("");
   const [classFilter, setClassFilter] = useState("");
@@ -72,9 +37,9 @@ const StudentsList = () => {
       "ID", "Name", "Roll No.", "Gender", "bloodGroup", "Parent Name", "Relation", "Class", "Section", "Address", "City", "Date of Birth", "Email", "Mobile",
     ];
 
-    const rows = students.map((student) =>
+    const rows = allstudents?.map((student) =>
       [
-        student.id, student.name, student.rollno, student.gender, student.bloodGroup, student.parentName, student.relation, student.classNum, student.section, student.address, student.city, student.dob, student.email, student.mobile,
+        student._id, student.studentName, student.rollno, student.gender, student.bloodGroup, student.parentName, student.relation, student.class, student.section, student.address, student.city, student.dateofbirth, student.email, student.mobile,
       ].map((value) => {
         // Check if the value needs to be wrapped in double quotes
         if (typeof value === "string" && /[",\n]/.test(value)) {
@@ -99,7 +64,7 @@ const StudentsList = () => {
     const csvContent = generateCSV();
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
+    const url = URL?.createObjectURL(blob);
     link.setAttribute("href", url);
     link.setAttribute("download", "students_data.csv");
     link.click(); // Trigger the download
@@ -116,77 +81,80 @@ const StudentsList = () => {
   };
 
   const handleAddStudent = () => {
-    // setStudents((prev) => [
-    //   { ...newStudent, branch: selectedBranch },
-    //   ...prev,
-    // ]);
-    // {
-    //   id: "", name: "", rollno: "", gender: "", bloodGroup: "", parentName: "", relation: "", classNum: "", section: "", address: "", city: "",
-    //   dob: "", email: "", mobile: "",
-    // }
     console.log(newStudent)
     const formdata = new FormData();
-    formdata.append("id", newStudent.id);
-    formdata.append("studentName", newStudent.name);
+    if (editingStudent && newStudent._id) {
+      formdata.append("_id", newStudent._id);
+    }
+    formdata.append("studentName", newStudent.studentName);
     formdata.append("rollno", newStudent.rollno);
     formdata.append("gender", newStudent.gender.toLowerCase());
-
-    formdata.append("bloodGroup", newStudent.bloodGroup);
+    formdata.append("bloodgroup", newStudent.bloodgroup);
     formdata.append("parentName", newStudent.parentName);
     formdata.append("relation", newStudent.relation);
-    formdata.append("class", newStudent.classNum);
+    formdata.append("class", newStudent.class);
     formdata.append("section", newStudent.section.toLowerCase());
     formdata.append("address", newStudent.address);
     formdata.append("city", newStudent.city);
-    formdata.append("dateofbirth", newStudent.dob);
+    formdata.append("dateofbirth", newStudent.dateofbirth);
     formdata.append("email", newStudent.email);
     formdata.append("mobile", newStudent.mobile);
     formdata.append("ProfilePicture", newStudent.ProfilePicture);
 
-    if (formdata) {
-      dispatch(AddStudentInitiate(formdata))
+    if (formdata && !editingStudent) {
+      dispatch(AddStudentInitiate(formdata, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated student list.');
+          dispatch(getAllStudentsInitiate());
+          resetForm();
+          setFormVisible(false)
+        } else {
+          console.error('Failed to delete student.');
+        }
+      }))
+    }
+    if (formdata && editingStudent) {
+      dispatch(UpdateStudentInitiate(formdata, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated student list.');
+          dispatch(getAllStudentsInitiate());
+          resetForm();
+          setFormVisible(false)
+        } else {
+          console.error('Failed to delete student.');
+        }
+      }))
     }
   };
-
-
-
 
   // Handle form submission (Add or Edit)
 
   const handleFormSubmit = () => {
     if (
-      !newStudent.name.trim() ||
-      !newStudent.id.trim() ||
-      !newStudent.classNum.toString().trim() ||
-      !newStudent.section.trim() ||
-      !newStudent.mobile.toString().trim() ||
-      !newStudent.parentName.trim() ||
-      !newStudent.address.trim() ||
-      !newStudent.city.trim() ||
-      !newStudent.gender.trim() ||
-      !newStudent.bloodGroup.trim() ||
-      !newStudent.relation.trim() ||
-      !newStudent.dob ||
-      !newStudent.rollno
+      !newStudent.studentName?.trim() ||
+      // !newStudent.id?.trim() ||
+      !newStudent.class?.toString().trim() ||
+      !newStudent.section?.trim() ||
+      !newStudent.mobile?.toString().trim() ||
+      !newStudent.parentName?.trim() ||
+      !newStudent.address?.trim() ||
+      !newStudent.city?.trim() ||
+      !newStudent.gender?.trim() ||
+      !newStudent.bloodgroup?.trim() ||
+      !newStudent.relation?.trim() ||
+      !newStudent?.dateofbirth ||
+      !newStudent?.rollno
       // ||!newStudent.email
     ) {
       alert("Please fill in all required fields.");
       return;
     }
-
     if (editingStudent) {
-      setStudents((prev) =>
-        prev.map((student) =>
-          student.id === editingStudent.id
-            ? { ...editingStudent, ...newStudent }
-            : student
-        )
-      );
-    } else {
       handleAddStudent();
     }
-    // setFormVisible(false);
-    // resetForm();
+    else {
+      handleAddStudent();
+    }
   };
 
   // Reset the form state
@@ -213,7 +181,18 @@ const StudentsList = () => {
 
   // Handle Delete functionality
   const handleDeleteClick = (id) => {
-    setStudents((prev) => prev.filter((student) => student.id !== id));
+    if (id) {
+      dispatch(
+        DeleteStudentInitiate({ _id: id }, (success) => {
+          if (success) {
+            console.log('Delete successful, fetching updated student list.');
+            dispatch(getAllStudentsInitiate());
+          } else {
+            console.error('Failed to delete student.');
+          }
+        })
+      );
+    }
   };
 
   // Filter students by search query
@@ -221,7 +200,7 @@ const StudentsList = () => {
   const { selectedBranch } = useBranch();
 
   // First, filter students by branch
-  const branchFilteredStudents = students.filter(
+  const branchFilteredStudents = allstudents.filter(
     (student) => student.branch === selectedBranch
   );
 
@@ -229,14 +208,14 @@ const StudentsList = () => {
   const filteredStudents = branchFilteredStudents.filter((student) => {
     const lowercasedQuery = searchQuery.toLowerCase();
     const lowercasedSection = sectionQuery.toLowerCase();
-    const classMatch = classFilter === "" || classFilter === "all" || student.classNum.toString() === classFilter;
+    const classMatch = classFilter === "" || classFilter === "all" || student.class.toString() === classFilter;
 
     return (
-      (student.name.toLowerCase().includes(lowercasedQuery) ||
-        student.id.toLowerCase().includes(lowercasedQuery) ||
+      (student.studentName.toLowerCase().includes(lowercasedQuery) ||
+        student._id.toLowerCase().includes(lowercasedQuery) ||
         student.parentName.toLowerCase().includes(lowercasedQuery) ||
         student.rollno.toLowerCase().includes(lowercasedQuery) ||
-        student.classNum.toString().toLowerCase().includes(lowercasedQuery)) &&
+        student.class.toString().toLowerCase().includes(lowercasedQuery)) &&
       (lowercasedSection === "" ||
         student.section.toLowerCase() === lowercasedSection) &&
       classMatch
@@ -290,7 +269,6 @@ const StudentsList = () => {
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-
   return (
     <div className="p-4 bg-gray-100 min-h-screen max-w-7xl mx-auto">
       <h1 className="mb-6 text-3xl font-bold text-gray-800">Students</h1>
@@ -395,23 +373,37 @@ const StudentsList = () => {
                   }
                 />
 
-                {newStudent.ProfilePicture && (
+                {/* {newStudent.ProfilePicture && !editingStudent && (
                   <img
-                    src={URL.createObjectURL(newStudent.ProfilePicture)}
+                    src={URL?.createObjectURL(newStudent.ProfilePicture)}
+                    alt="Profile Preview"
+                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                  />
+                )} */}
+
+                {(newStudent.ProfilePicture || editingStudent?.ProfilePicture) && (
+                  <img
+                    src={
+                      newStudent.ProfilePicture instanceof File
+                        ? URL.createObjectURL(newStudent.ProfilePicture)
+                        : `${process.env.REACT_APP_IMAGE_BASE_URL || 'https://example.com/path_to_images/'}${editingStudent.ProfilePicture}`
+                    }
                     alt="Profile Preview"
                     style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
                   />
                 )}
+
+
                 {/* Dynamic Form Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { label: "Student ID*", name: "id", type: "text" },
-                    { label: "Student Name*", name: "name", type: "text" },
+                    // { label: "Student ID*", name: "_id", type: "text" },
+                    { label: "Student Name*", name: "studentName", type: "text" },
                     { label: "Email*", name: "email", type: "email" },
                     { label: "Roll Number*", name: "rollno", type: "text" },
-                    { label: "Class*", name: "classNum", type: "text" },
-                    { label: "Date of Birth", name: "dob", type: "date" },
-                    { label: "Blood Group", name: "bloodGroup", type: "text" },
+                    { label: "Class*", name: "class", type: "text" },
+                    { label: "Date of Birth", name: "dateofbirth", type: "date" },
+                    { label: "Blood Group", name: "bloodgroup", type: "text" },
                     { label: "Username", name: "username", type: "text" },
                     { label: "Password", name: "password", type: "password" },
                     { label: "Guardian Name*", name: "parentName", type: "text" },
@@ -425,12 +417,17 @@ const StudentsList = () => {
                       <input
                         type={type}
                         name={name}
-                        value={newStudent[name]}
+                        value={
+                          name === "dateofbirth"
+                            ? newStudent[name]?.split("T")[0] || ""
+                            : newStudent[name]
+                        }
                         onChange={handleInputChange}
                         className="w-full p-2 border border-gray-300 rounded-md"
                       />
                     </div>
                   ))}
+
 
                   {/* Dropdowns */}
                   {[
@@ -449,18 +446,30 @@ const StudentsList = () => {
                       <label className="block font-medium text-gray-700">{label}</label>
                       <select
                         name={name}
-                        value={newStudent[name]}
+                        value={
+                          name === "section"
+                            ? (newStudent[name] || "").toUpperCase()
+                            : name === "gender"
+                              ? newStudent[name]?.charAt(0).toUpperCase() + newStudent[name]?.slice(1).toLowerCase()
+                              : newStudent[name] || ""
+                        }
                         onChange={handleInputChange}
                         className="w-full p-2 border border-gray-300 rounded-md"
                       >
                         {options.map((option, index) => (
-                          <option key={index} value={option === "Select Section" || option === "Select Gender" ? "" : option}>
+                          <option
+                            key={index}
+                            value={
+                              option === "Select Section" || option === "Select Gender" ? "" : option
+                            }
+                          >
                             {option}
                           </option>
                         ))}
                       </select>
                     </div>
                   ))}
+
                 </div>
 
                 {/* Action Buttons */}
@@ -512,21 +521,21 @@ const StudentsList = () => {
             </tr>
           </thead>
           <tbody>
-            {displayedStudents.length > 0 ? (
-              displayedStudents.map((student) => (
+            {allstudents.length > 0 ? (
+              allstudents.map((student) => (
                 <tr key={student.id} className="border-b hover:bg-gray-50 text-sm md:table-row block md:border-none">
                   {/* Mobile View: Stack Data */}
                   <td className="px-4 py-2 border md:table-cell block">
-                    <span className="font-semibold md:hidden">ID: </span> {student.id}
+                    <span className="font-semibold md:hidden">ID: </span> {student._id}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
-                    <span className="font-semibold md:hidden">Name: </span> {student.name}
+                    <span className="font-semibold md:hidden">Name: </span> {student.studentName}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
                     <span className="font-semibold md:hidden">Roll No.: </span> {student.rollno}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
-                    <span className="font-semibold md:hidden">Class: </span> {student.classNum}
+                    <span className="font-semibold md:hidden">Class: </span> {student.class}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
                     <span className="font-semibold md:hidden">Section: </span> {student.section}
@@ -535,16 +544,16 @@ const StudentsList = () => {
                     <span className="font-semibold md:hidden">Gender: </span> {student.gender}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
-                    <span className="font-semibold md:hidden">DOB: </span> {student.dob}
+                    <span className="font-semibold md:hidden">DOB: </span> {student.dateofbirth}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
-                    <span className="font-semibold md:hidden">Blood Group: </span> {student.bloodGroup}
+                    <span className="font-semibold md:hidden">Blood Group: </span> {student.bloodgroup}
                   </td>
                   <td className="border px-4 py-2 md:table-cell block">
-                    <span className="font-semibold md:hidden">Username: </span> {student.username}
+                    <span className="font-semibold md:hidden">Username: </span> {student.studentName}
                   </td>
                   <td className="border px-4 py-2 md:table-cell block">
-                    <span className="font-semibold md:hidden">Password: </span> {student.password}
+                    <span className="font-semibold md:hidden">Password: </span> {"*********"}
                   </td>
                   <td className="px-4 py-2 border md:table-cell block">
                     <span className="font-semibold md:hidden">Guardian: </span> {student.parentName}
@@ -563,7 +572,7 @@ const StudentsList = () => {
                     <button
                       onClick={() => {
                         if (window.confirm("Are you sure you want to delete this student?")) {
-                          handleDeleteClick(student.id);
+                          handleDeleteClick(student._id);
                         }
                       }}
                       className="ml-4 text-red-600 hover:text-red-800"
@@ -630,6 +639,3 @@ const StudentsList = () => {
 };
 
 export default StudentsList;
-
-
-
