@@ -10,6 +10,9 @@ import GetAllClassesReducer from "./class/getAllClassesReducer";
 import GetAllStudentsReducer from "./students/getstudentsReducer";
 import UpdatestudentReducer from "./students/updatestudentReducer";
 import DeletestudentReducer from "./students/deletestudentReducer";
+import AddClassTimetableReducer from "./class/addClassTimetableReducer";
+import GetClassTimetableReducer from "./class/getClassTimetableReducer";
+
 
 
 
@@ -30,7 +33,9 @@ const rootReducer = combineReducers({
   updateduserdetails: UpdateuserprofileReducer,
   //class
   addclass: AddClassReducer,
-  getclasses: GetAllClassesReducer
+  getclasses: GetAllClassesReducer,
+  addtimetable: AddClassTimetableReducer,
+  getclasstimetable: GetClassTimetableReducer
 
 });
 export default rootReducer;

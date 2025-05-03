@@ -12,12 +12,13 @@ import { GetAllClassesInitiate } from "../redux/actions/class/getAllClassesActio
 import { DeleteClassInitiate } from "../redux/actions/class/deleteclassAction";
 import { EditClassInitiate } from "../redux/actions/class/editClassAction";
 import Loader from "../Components/loader";
+import { data } from "react-router-dom";
 
 const ClassList = () => {
   const dispatch = useDispatch();
   const { data: classes = [] } = useSelector((state) => state.getclasses.classes || {});
   const { loading: getLoading } = useSelector((state) => state.getclasses);
-const { loading: addLoading } = useSelector((state) => state.addClass);
+// const { loading: addLoading } = useSelector((state) => state.addClass);
 // const { loading: editLoading } = useSelector((state) => state.editClass);
 // const { loading: deleteLoading } = useSelector((state) => state.deleteClass);
   console.log("classes", classes);
@@ -29,7 +30,7 @@ const { loading: addLoading } = useSelector((state) => state.addClass);
 
   useEffect(() => {
     dispatch(GetAllClassesInitiate());
-  }, [dispatch]);
+  }, [classes]);
 
   const totalPages = Math.ceil(classes.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
@@ -95,7 +96,7 @@ const { loading: addLoading } = useSelector((state) => state.addClass);
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
   const anyLoading =
-  getLoading || addLoading;
+  getLoading 
 
 if (anyLoading) {
   return <Loader />;
