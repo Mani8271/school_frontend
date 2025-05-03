@@ -7,8 +7,12 @@ import GetuserprofileReducer from "./userprofile/getuserprofileReducer";
 import UpdateuserprofileReducer from "./userprofile/updateuserprofileReducer";
 import AddClassReducer from "./class/addClassReducer";
 import GetAllClassesReducer from "./class/getAllClassesReducer";
+import GetAllStudentsReducer from "./students/getstudentsReducer";
+import UpdatestudentReducer from "./students/updatestudentReducer";
+import DeletestudentReducer from "./students/deletestudentReducer";
 import AddClassTimetableReducer from "./class/addClassTimetableReducer";
 import GetClassTimetableReducer from "./class/getClassTimetableReducer";
+
 
 
 
@@ -21,6 +25,9 @@ const rootReducer = combineReducers({
   forgotPasswordData: forgotPasswordReducer,
   //  students
   addstudent: AddstudentReducer,
+  getallstudents: GetAllStudentsReducer,
+  updatestudent: UpdatestudentReducer,
+  deletestudent: DeletestudentReducer,
   // user profile
   userdetails: GetuserprofileReducer,
   updateduserdetails: UpdateuserprofileReducer,
