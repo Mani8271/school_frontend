@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Upload, Add, Download, Edit, Delete } from "@mui/icons-material";
 import { useBranch } from "../Pages/Branches";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTeachersInitiate } from "../redux/actions/staff/teachingstaff/getteachingstaffAction";
+import { AddTeachingstaffInitiate } from "../redux/actions/staff/teachingstaff/addteachingstaffAction";
+import { UpdateTeacherInitiate } from "../redux/actions/staff/teachingstaff/teachingstaffupdateAction";
 
 const TeachingStaff = () => {
   const [teachers, setTeachers] = useState([
@@ -230,7 +234,13 @@ const TeachingStaff = () => {
       city: "Vizag",
       branch: "Main Branch",
     },
-  ]);  
+  ]);
+  const dispatch = useDispatch();
+  const { data: allteachers = [] } = useSelector((state) => state.getallteachers.teachers || {});
+  useEffect(() => {
+    dispatch(getAllTeachersInitiate());
+  }, [dispatch]);
+  console.log("i am all allteachers", allteachers);
   const [formVisible, setFormVisible] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [page, setPage] = useState(0);
@@ -241,7 +251,7 @@ const TeachingStaff = () => {
   useEffect(() => {
     setPage(0); // Reset to first page when branch changes
   }, [selectedBranch]);
-  
+
   const handleChangePage = (newPage) => {
     setPage(newPage);
   };
@@ -253,21 +263,22 @@ const TeachingStaff = () => {
   };
 
   const [newTeacher, setNewTeacher] = useState({
-    id: "",
-    name: "",
+    _id: "",
+    teacherName: "",
     gender: "",
-    department: "",
+    subject: "",
     qualification: "",
     experience: "",
     email: "",
-    mobile: "",
+    mobileNumber: "",
     username: "",
     password: "",
     address: "",
     city: "",
     maritalStatus: "",
-    emergencyContact: "",
+    emergencyContactNumber: "",
     joiningDate: "",
+    ProfilePicture: ""
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -290,16 +301,16 @@ const TeachingStaff = () => {
     ];
     const rows = teachers.map((teacher) =>
       [
-        teacher.id,
-        teacher.name,
-        teacher.department,
+        teacher._id,
+        teacher.teacherName,
+        teacher.subject,
         teacher.gender,
         teacher.qualification,
         teacher.experience,
         teacher.joiningDate,
         teacher.email,
         teacher.mobile,
-        teacher.username,
+        teacher.teacherName,
         teacher.password,
         teacher.address,
         teacher.city,
@@ -328,7 +339,7 @@ const TeachingStaff = () => {
       teacher.department.toLowerCase().includes(lowercasedQuery)
     );
   });
-  
+
   const displayedTeachers = filteredTeachers.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -354,18 +365,59 @@ const TeachingStaff = () => {
   };
 
   const handleAddTeacher = () => {
-    setTeachers((prev) => [
-      { ...newTeacher, branch: selectedBranch },
-      ...prev,
-    ]);
+    console.log(newTeacher)
+    const formdata = new FormData();
+    if (editingTeacher && newTeacher._id) {
+      formdata.append("_id", newTeacher._id);
+    }
+    formdata.append("teacherName", newTeacher.teacherName);
+    formdata.append("subject", newTeacher.subject);
+    formdata.append("gender", newTeacher.gender);
+    formdata.append("qualification", newTeacher.qualification);
+    formdata.append("experience", newTeacher.experience);
+    formdata.append("joiningDate", newTeacher.joiningDate);
+    formdata.append("maritalStatus", newTeacher.maritalStatus.toLowerCase());
+    formdata.append("emergencyContactNumber", newTeacher.emergencyContactNumber);
+    formdata.append("address", newTeacher.address);
+    // formdata.append("city", newTeacher.city);
+    formdata.append("email", newTeacher.email);
+    formdata.append("mobileNumber", newTeacher.mobileNumber);
+    formdata.append("password", newTeacher.password);
+    formdata.append("ProfilePicture", newTeacher.ProfilePicture);
+
+    if (formdata && !editingTeacher) {
+      dispatch(AddTeachingstaffInitiate(formdata, (success) => {
+        if (success) {
+          console.log('add successful, fetching add student list.');
+          dispatch(getAllTeachersInitiate());
+          setFormVisible(false);
+          resetForm();
+        } else {
+          console.error('Failed to add teachet.');
+        }
+      }))
+    }
+    if (formdata && editingTeacher) {
+      dispatch(UpdateTeacherInitiate(formdata, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated teacher list.');
+          dispatch(getAllTeachersInitiate());
+          setFormVisible(false);
+          resetForm();
+        } else {
+          console.error('Failed to update student.');
+        }
+      }))
+    }
   };
 
   const handleFormSubmit = () => {
+    console.log(newTeacher)
     if (
-      !newTeacher.name ||
-      !newTeacher.id ||
-      !newTeacher.department ||
-      !newTeacher.mobile ||
+      !newTeacher.teacherName ||
+      // !newTeacher.id ||
+      !newTeacher.subject ||
+      !newTeacher.mobileNumber ||
       !newTeacher.gender ||
       !newTeacher.experience ||
       !newTeacher.joiningDate
@@ -374,36 +426,29 @@ const TeachingStaff = () => {
       return;
     }
     if (editingTeacher) {
-      setTeachers((prev) =>
-        prev.map((teacher) =>
-          teacher.id === editingTeacher.id
-            ? { ...editingTeacher, ...newTeacher, branch: selectedBranch}
-            : teacher
-        )
-      );
+      handleAddTeacher();
     } else {
       handleAddTeacher(); // Call the function here
     }
-    setFormVisible(false);
-    resetForm();
+
   };
 
   const resetForm = () => {
     setNewTeacher({
       id: "",
-      name: "",
+      teacherName: "",
       gender: "",
-      department: "",
+      subject: "",
       qualification: "",
       experience: "",
       email: "",
-      mobile: "",
-      username:"",
-      password:"",
+      mobileNumber: "",
+      username: "",
+      password: "",
       address: "",
       city: "",
       maritalStatus: "",
-      emergencyContact: "",
+      emergencyContactNumber: "",
       joiningDate: "",
     });
     setEditingTeacher(null);
@@ -421,7 +466,7 @@ const TeachingStaff = () => {
   };
 
   const handleDeleteClick = (id) => {
-    setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
+    // setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
   };
 
   const handleSearchChange = (e) => {
@@ -478,24 +523,24 @@ const TeachingStaff = () => {
       </div>
 
       {/* <div className="relative bg-white shadow-md rounded-md"> */}
-        {/* Scrollable Table Container */}
-        {/* <div className="overflow-x-auto">
+      {/* Scrollable Table Container */}
+      {/* <div className="overflow-x-auto">
           <table className="w-full min-w-[800px] bg-white rounded-lg"> */}
-          <div className="overflow-x-auto w-full">
-            <table className="min-w-full bg-white rounded-lg">
-            {/* Table Header */}
-            <thead className="sticky top-0 z-10 bg-gray-200 border-b">
-              <tr className="text-left text-xs sm:text-sm md:text-base">
-                {["ID", "Name", "Department", "Gender", "Qualification", "Experience", "Joining Date", "Email", "Mobile", "Username", "Password", "Address", "Actions"].map((heading) => (
-                  <th key={heading} className="px-4 py-3 whitespace-nowrap">{heading}</th>
-                ))}
-              </tr>
-            </thead>
-            {/* Table Body */}
-            <tbody className="divide-y">
-              {displayedTeachers.length > 0 ? (
-                displayedTeachers.map((teacher) => (
-                  <tr key={teacher.id} className="hover:bg-gray-50 text-sm md:text-base">
+      <div className="overflow-x-auto w-full">
+        <table className="min-w-full bg-white rounded-lg">
+          {/* Table Header */}
+          <thead className="sticky top-0 z-10 bg-gray-200 border-b">
+            <tr className="text-left text-xs sm:text-sm md:text-base">
+              {["ID", "Name", "Department", "Gender", "Qualification", "Experience", "Joining Date", "Email", "Mobile", "Username", "Password", "Address", "Actions"].map((heading) => (
+                <th key={heading} className="px-4 py-3 whitespace-nowrap">{heading}</th>
+              ))}
+            </tr>
+          </thead>
+          {/* Table Body */}
+          <tbody className="divide-y">
+            {displayedTeachers.length > 0 ? (
+              displayedTeachers.map((teacher) => (
+                <tr key={teacher.id} className="hover:bg-gray-50 text-sm md:text-base">
                   {["id", "name", "department", "gender", "qualification", "experience", "joiningDate", "email", "mobile", "username", "password", "address"].map((key) => (
                     <td key={key} className="px-4 py-3 border truncate max-w-[150px] sm:max-w-[150px]">{teacher[key]}</td>
                   ))}
@@ -508,165 +553,194 @@ const TeachingStaff = () => {
                     </button>
                   </td>
                 </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="13" className="px-4 py-3 text-center text-gray-500">
-                    No teaching staff found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="13" className="px-4 py-3 text-center text-gray-500">
+                  No teaching staff found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-        {/* Pagination & Rows Per Page */}
-        <div className="overflow-x-auto">
-          {/* <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-gray-50 border-t space-y-2 sm:space-y-0 sm:space-x-4"> */}
-          <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 bg-gray-50 border-t w-full text-sm">
-            <div className="flex items-center space-x-2">
-              <span className="text-gray-700">Rows per page:</span>
-              <select
-                className="border border-gray-300 p-1 rounded"
-                value={rowsPerPage}
-                onChange={handleChangeRowsPerPage}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </select>
-            </div>
+      {/* Pagination & Rows Per Page */}
+      <div className="overflow-x-auto">
+        {/* <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-gray-50 border-t space-y-2 sm:space-y-0 sm:space-x-4"> */}
+        <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 bg-gray-50 border-t w-full text-sm">
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-700">Rows per page:</span>
+            <select
+              className="border border-gray-300 p-1 rounded"
+              value={rowsPerPage}
+              onChange={handleChangeRowsPerPage}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+            </select>
+          </div>
 
-            {/* Pagination controls */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleChangePage(Math.max(page - 1, 0))}
-                disabled={page === 0}
-                className={`px-4 py-2 border rounded-md ${
-                  page === 0 ? "text-gray-400 cursor-not-allowed" : "text-gray-900 hover:bg-gray-100"
+          {/* Pagination controls */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleChangePage(Math.max(page - 1, 0))}
+              disabled={page === 0}
+              className={`px-4 py-2 border rounded-md ${page === 0 ? "text-gray-400 cursor-not-allowed" : "text-gray-900 hover:bg-gray-100"
                 }`}
-              >
-                Previous
-              </button>
-              <span className="text-gray-700">
-                Page {page + 1} of {Math.ceil(filteredTeachers.length / rowsPerPage)}
-              </span>
-              <button
-                onClick={() =>
-                  handleChangePage(
-                    Math.min(page + 1, Math.ceil(filteredTeachers.length / rowsPerPage) - 1)
-                  )
-                }
-                disabled={page >= Math.ceil(filteredTeachers.length / rowsPerPage) - 1}
-                className={`px-4 py-2 border rounded-md ${
-                  page >= Math.ceil(filteredTeachers.length / rowsPerPage) - 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-900 hover:bg-gray-100"
+            >
+              Previous
+            </button>
+            <span className="text-gray-700">
+              Page {page + 1} of {Math.ceil(filteredTeachers.length / rowsPerPage)}
+            </span>
+            <button
+              onClick={() =>
+                handleChangePage(
+                  Math.min(page + 1, Math.ceil(filteredTeachers.length / rowsPerPage) - 1)
+                )
+              }
+              disabled={page >= Math.ceil(filteredTeachers.length / rowsPerPage) - 1}
+              className={`px-4 py-2 border rounded-md ${page >= Math.ceil(filteredTeachers.length / rowsPerPage) - 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-900 hover:bg-gray-100"
                 }`}
-              >
-                Next
-              </button>
-            </div>
+            >
+              Next
+            </button>
           </div>
         </div>
+      </div>
       {/* </div> */}
 
       {formVisible && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75">
-        <div className="relative w-full max-w-3xl p-6 bg-white rounded-md shadow-lg max-h-[90vh] overflow-y-auto">
-          <h2 className="mb-10 text-xl font-semibold border-b">
-            {editingTeacher ? "Edit Teacher" : "Add New Teacher"}
-          </h2>
-          {/* Close Icon */}
-          <button
-            onClick={handleCancel}
-            className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-xl"
-          >
-            &times;
-          </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75">
+          <div className="relative w-full max-w-3xl p-6 bg-white rounded-md shadow-lg max-h-[90vh] overflow-y-auto">
+            <h2 className="mb-10 text-xl font-semibold border-b">
+              {editingTeacher ? "Edit Teacher" : "Add New Teacher"}
+            </h2>
+            {/* Close Icon */}
+            <button
+              onClick={handleCancel}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-xl"
+            >
+              &times;
+            </button>
 
-          <form>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { label: "Teacher ID*", name: "id", type: "text" },
-                { label: "Teacher Name*", name: "name", type: "text" },
-                { label: "Qualification", name: "qualification", type: "text" },
-                { label: "Experience*", name: "experience", type: "text" },
-                { label: "Joining Date*", name: "joiningDate", type: "date" },
-                { label: "Emergency Contact", name: "emergencyContact", type: "text" },
-                { label: "Email", name: "email", type: "email" },
-                { label: "Mobile Number*", name: "mobile", type: "text" },
-                { label: "User Name", name: "username", type: "text" },
-                { label: "Password", name: "password", type: "password" },
-                { label: "Address", name: "address", type: "text" }
-              ].map(({ label, name, type }) => (
-                <div key={name}>
-                  <label htmlFor={name} className="block font-medium text-gray-700">{label}</label>
-                  <input
-                    type={type}
-                    id={name}
-                    name={name}
-                    value={newTeacher[name] || ""}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-              ))}
-
-              {[
-                {
-                  label: "Department*",
-                  name: "subject",
-                  options: ["Math", "English"],
-                },
-                {
-                  label: "Gender*",
-                  name: "gender",
-                  options: ["Male", "Female"],
-                },
-                {
-                  label: "Marital Status",
-                  name: "maritalStatus",
-                  options: ["Single", "Married"],
+            <form>
+              {/* image */}
+              <input
+                type="file"
+                name="ProfilePicture"
+                onChange={(e) =>
+                  setNewTeacher((prev) => ({
+                    ...prev,
+                    ProfilePicture: e.target.files[0], // Capture the file object
+                  }))
                 }
-              ].map(({ label, name, options }) => (
-                <div key={name}>
-                  <label htmlFor={name} className="block font-medium text-gray-700">{label}</label>
-                  <select
-                    id={name}
-                    name={name}
-                    value={newTeacher[name] || ""}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="">Select {label}</option>
-                    {options.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
+              />
 
-            <div className="flex justify-between mt-6">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-2 text-white bg-gray-500 rounded-md"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleFormSubmit}
-                className="px-6 py-2 text-white bg-blue-600 rounded-md"
-              >
-                {editingTeacher ? "Save Changes" : "Add Teacher"}
-              </button>
-            </div>
-          </form>
+              {/* {newStudent.ProfilePicture && !editingStudent && (
+                  <img
+                    src={URL?.createObjectURL(newStudent.ProfilePicture)}
+                    alt="Profile Preview"
+                    style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                  />
+                )} */}
+
+              {(newTeacher.ProfilePicture || editingTeacher?.ProfilePicture) && (
+                <img
+                  src={
+                    newTeacher.ProfilePicture instanceof File
+                      ? URL.createObjectURL(newTeacher.ProfilePicture)
+                      : `${process.env.REACT_APP_IMAGE_BASE_URL || 'https://example.com/path_to_images/'}${editingTeacher.ProfilePicture}`
+                  }
+                  alt="Profile Preview"
+                  style={{ width: "100px", height: "100px", objectFit: "cover", marginTop: "10px" }}
+                />
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  // { label: "Teacher ID*", name: "id", type: "text" },
+                  { label: "Teacher Name*", name: "teacherName", type: "text" },
+                  { label: "Qualification", name: "qualification", type: "text" },
+                  { label: "Experience*", name: "experience", type: "text" },
+                  { label: "Joining Date*", name: "joiningDate", type: "date" },
+                  { label: "Emergency Contact", name: "emergencyContactNumber", type: "text" },
+                  { label: "Email", name: "email", type: "email" },
+                  { label: "Mobile Number*", name: "mobileNumber", type: "text" },
+                  { label: "User Name", name: "username", type: "text" },
+                  { label: "Password", name: "password", type: "password" },
+                  { label: "Address", name: "address", type: "text" }
+                ].map(({ label, name, type }) => (
+                  <div key={name}>
+                    <label htmlFor={name} className="block font-medium text-gray-700">{label}</label>
+                    <input
+                      type={type}
+                      id={name}
+                      name={name}
+                      value={newTeacher[name] || ""}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                ))}
+
+                {[
+                  {
+                    label: "Department*",
+                    name: "subject",
+                    options: ["Math", "English"],
+                  },
+                  {
+                    label: "Gender*",
+                    name: "gender",
+                    options: ["Male", "Female"],
+                  },
+                  {
+                    label: "Marital Status",
+                    name: "maritalStatus",
+                    options: ["Unmarried", "Married"],
+                  }
+                ].map(({ label, name, options }) => (
+                  <div key={name}>
+                    <label htmlFor={name} className="block font-medium text-gray-700">{label}</label>
+                    <select
+                      id={name}
+                      name={name}
+                      value={newTeacher[name] || ""}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select {label}</option>
+                      {options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-between mt-6">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-6 py-2 text-white bg-gray-500 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFormSubmit}
+                  className="px-6 py-2 text-white bg-blue-600 rounded-md"
+                >
+                  {editingTeacher ? "Save Changes" : "Add Teacher"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
       )}
 
 
