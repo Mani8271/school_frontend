@@ -16,6 +16,7 @@ import AddteachingstaffReducer from "./staff/teachingstaff/addteachingstaffReduc
 import GetAllTeachersReducer from "./staff/teachingstaff/getteachingstaffReducer";
 import UpdateteacherReducer from "./staff/teachingstaff/updateteachingstaffReducer";
 import DeleteteacherReducer from "./staff/teachingstaff/deleteteachingstaffReducer";
+import AddHolidayReducer from "./holiday/addHolidayReducer";
 
 
 
@@ -44,7 +45,10 @@ const rootReducer = combineReducers({
   addclass: AddClassReducer,
   getclasses: GetAllClassesReducer,
   addtimetable: AddClassTimetableReducer,
-  getclasstimetable: GetClassTimetableReducer
+  getclasstimetable: GetClassTimetableReducer,
+
+  //holiday
+  addholiday: AddHolidayReducer,
 
 });
 export default rootReducer;
