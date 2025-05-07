@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTeachersInitiate } from "../redux/actions/staff/teachingstaff/getteachingstaffAction";
 import { AddTeachingstaffInitiate } from "../redux/actions/staff/teachingstaff/addteachingstaffAction";
 import { UpdateTeacherInitiate } from "../redux/actions/staff/teachingstaff/teachingstaffupdateAction";
+import { DeleteTeacherInitiate } from "../redux/actions/staff/teachingstaff/deleteteachingstaffAction";
 
 const TeachingStaff = () => {
   // const [teachers, setTeachers] = useState([
@@ -467,6 +468,18 @@ const TeachingStaff = () => {
 
   const handleDeleteClick = (id) => {
     // setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
+        if (id) {
+          dispatch(
+            DeleteTeacherInitiate({ _id: id }, (success) => {
+              if (success) {
+                console.log('Delete successful, fetching updated student list.');
+                dispatch(getAllTeachersInitiate());
+              } else {
+                console.error('Failed to delete student.');
+              }
+            })
+          );
+        }
   };
 
   const handleSearchChange = (e) => {
@@ -548,7 +561,7 @@ const TeachingStaff = () => {
                     <button onClick={() => handleEditClick(teacher)} className="text-blue-600 hover:text-blue-800">
                       <Edit className="inline-block mr-1" />
                     </button>
-                    <button onClick={() => window.confirm("Are you sure?") && handleDeleteClick(teacher.id)} className="text-red-600 hover:text-red-800">
+                    <button onClick={() => window.confirm("Are you sure?") && handleDeleteClick(teacher._id)} className="text-red-600 hover:text-red-800">
                       <Delete className="inline-block mr-1" />
                     </button>
                   </td>

@@ -16,6 +16,10 @@ import AddteachingstaffReducer from "./staff/teachingstaff/addteachingstaffReduc
 import GetAllTeachersReducer from "./staff/teachingstaff/getteachingstaffReducer";
 import UpdateteacherReducer from "./staff/teachingstaff/updateteachingstaffReducer";
 import DeleteteacherReducer from "./staff/teachingstaff/deleteteachingstaffReducer";
+import AddnonteachingstaffReducer from "./staff/nonteachingstaff/addnonteachingstaffReducer";
+import GetAllnonTeachersReducer from "./staff/nonteachingstaff/getnonteachingstaffReducer";
+import UpdatenonteacherReducer from "./staff/nonteachingstaff/updatenonteachingstaffReducer";
+import DeletenonteacherReducer from "./staff/nonteachingstaff/nonteachingstaffdeleteReducer";
 
 
 
@@ -36,7 +40,12 @@ const rootReducer = combineReducers({
   addteacher: AddteachingstaffReducer,
   getallteachers: GetAllTeachersReducer,
   updateteacher: UpdateteacherReducer,
-  deletestudent: DeleteteacherReducer,
+  deleteteacher: DeleteteacherReducer,
+  // non teaching staff
+  addnonteacher: AddnonteachingstaffReducer,
+  getallnonteachers: GetAllnonTeachersReducer,
+  updatenonteacher: UpdatenonteacherReducer,
+  deletenonteacher: DeletenonteacherReducer,
   // user profile
   userdetails: GetuserprofileReducer,
   updateduserdetails: UpdateuserprofileReducer,
