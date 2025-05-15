@@ -16,6 +16,7 @@ import AddteachingstaffReducer from "./staff/teachingstaff/addteachingstaffReduc
 import GetAllTeachersReducer from "./staff/teachingstaff/getteachingstaffReducer";
 import UpdateteacherReducer from "./staff/teachingstaff/updateteachingstaffReducer";
 import DeleteteacherReducer from "./staff/teachingstaff/deleteteachingstaffReducer";
+
 import AddnonteachingstaffReducer from "./staff/nonteachingstaff/addnonteachingstaffReducer";
 import GetAllnonTeachersReducer from "./staff/nonteachingstaff/getnonteachingstaffReducer";
 import UpdatenonteacherReducer from "./staff/nonteachingstaff/updatenonteachingstaffReducer";
@@ -32,6 +33,9 @@ import AddbusstaffReducer from "./schoolbus/busstaff/addbusstaffReducer";
 import DeletebusstaffReducer from "./schoolbus/busstaff/deletebusstaffReducer";
 import GetAllBusstaffReducer from "./schoolbus/busstaff/getallbusstaffReducer";
 import UpdatebusstaffReducer from "./schoolbus/busstaff/updatebusstaffReducer";
+
+import AddHolidayReducer from "./holiday/addHolidayReducer";
+
 
 
 
@@ -80,7 +84,10 @@ const rootReducer = combineReducers({
   addclass: AddClassReducer,
   getclasses: GetAllClassesReducer,
   addtimetable: AddClassTimetableReducer,
-  getclasstimetable: GetClassTimetableReducer
+  getclasstimetable: GetClassTimetableReducer,
+
+  //holiday
+  addholiday: AddHolidayReducer,
 
 });
 export default rootReducer;
