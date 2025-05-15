@@ -1,9 +1,9 @@
 import API from "../../../../API/API";
 const api = new API();
-const endPoint = "TeachingStaff/delete-student";
+const endPoint = "TeachingStaff/delete-teacher";
 
 export const deleteteachingstaffApi = async (teacherid) => {
-    console.log("formdataapi", studentid);
+    console.log("formdataapi", teacherid);
   return new Promise(async (resolve, reject) => {
     try {
       const result = await api.delete(`${endPoint}`, teacherid );
