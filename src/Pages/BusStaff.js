@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit, Delete, Add } from "@mui/icons-material";
 import { useBranch } from "../Pages/Branches"; // Import branch context
+import { useDispatch, useSelector } from "react-redux";
+import { getAllBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/getallbusstaffAction";
+import { AddBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/addbusstaffAction";
+import { UpdateBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/updatebusstaffAction";
 
 const DriverDashboard = () => {
+  const dispatch = useDispatch();
+  const { data: allbusesstaff = [] } = useSelector((state) => state.getallbusstaff.busstaff || {});
+  useEffect(() => {
+    dispatch(getAllBusstaffInitiate());
+  }, []);
+  console.log("i am all allbusesstaff", allbusesstaff);
   const initialDriversData = [
     {
       id: "D001",
@@ -122,6 +132,7 @@ const DriverDashboard = () => {
   const [drivers, setDrivers] = useState(initialDriversData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDriver, setSelectedDriver] = useState(null);
+  // console.log(' iam mage',selectedDriver?.profilePhoto)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -133,7 +144,7 @@ const DriverDashboard = () => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
-  const branchSpecificDrivers = drivers.filter(
+  const branchSpecificDrivers = allbusesstaff.filter(
     (driver) => driver.branch === selectedBranch
   );
 
@@ -142,15 +153,17 @@ const DriverDashboard = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newDriver = {
-      id: formData.get("id"),
+      // id: formData.get("id"),
       role: formData.get("role"),
       name: formData.get("name"),
-      dob: formData.get("dob"),
+      dateofBirth: formData.get("dob"),
       license: formData.get("license"),
       contact: formData.get("contact"),
       vehicle: formData.get("vehicle"),
       route: formData.get("route"),
       experience: formData.get("experience"),
+      email: formData.get('email'),
+      password: formData.get("password"),
       profilePhoto:
         formData.get("profilePhoto") && formData.get("profilePhoto").name
           ? URL.createObjectURL(formData.get("profilePhoto"))
@@ -160,8 +173,18 @@ const DriverDashboard = () => {
           ? URL.createObjectURL(formData.get("licensePhoto"))
           : "https://via.placeholder.com/150",
     };
-    setDrivers([...drivers, newDriver]);
-    closeAddModal();
+    // setDrivers([...drivers, newDriver]);
+
+    dispatch(AddBusstaffInitiate(newDriver, (success) => {
+      if (success) {
+        console.log('add successful, fetching add student list.');
+        dispatch(getAllBusstaffInitiate());
+        closeAddModal();
+      } else {
+        console.error('Failed to add teachet.');
+      }
+    }))
+
   };
 
   // Edit Driver
@@ -169,7 +192,7 @@ const DriverDashboard = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const updatedDriver = {
-      id: selectedDriver.id,
+      _id: selectedDriver._id,
       role: formData.get("role"),
       name: formData.get("name"),
       dob: formData.get("dob"),
@@ -177,7 +200,9 @@ const DriverDashboard = () => {
       contact: formData.get("contact"),
       vehicle: formData.get("vehicle"),
       route: formData.get("route"),
-      experience: formData.get("experience"),
+      // experience: formData.get("experience"),
+      email: formData.get('email'),
+      // password: formData.get("password"),
       profilePhoto:
         formData.get("profilePhoto") && formData.get("profilePhoto").name
           ? URL.createObjectURL(formData.get("profilePhoto"))
@@ -187,12 +212,16 @@ const DriverDashboard = () => {
           ? URL.createObjectURL(formData.get("licensePhoto"))
           : selectedDriver.licensePhoto,
     };
-    setDrivers(
-      drivers.map((driver) =>
-        driver.id === selectedDriver.id ? updatedDriver : driver
-      )
-    );
-    closeEditModal();
+        dispatch(UpdateBusstaffInitiate(updatedDriver, (success) => {
+            if (success) {
+              console.log('Delete successful, fetching updated teacher list.');
+              dispatch(getAllBusstaffInitiate());
+              closeEditModal();
+            } else {
+              console.error('Failed to update student.');
+            }
+          }))
+    
   };
 
   // Delete Driver
@@ -274,49 +303,39 @@ const DriverDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {branchSpecificDrivers
-                .filter(
-                  (driver) =>
-                    driver.name.toLowerCase().includes(searchQuery) ||
-                    driver.id.toLowerCase().includes(searchQuery) ||
-                    driver.role.toLowerCase().includes(searchQuery) ||
-                    driver.vehicle.toLowerCase().includes(searchQuery) ||
-                    driver.route.toLowerCase().includes(searchQuery)
-                )
-                .sort((a, b) => a.id.localeCompare(b.id))
-                .map((driver) => (
-                  <tr key={driver.id} className="border-b hover:bg-gray-100 text-xs sm:text-sm">
-                    <td className="px-6 py-3 border">{driver.role}</td>
-                    <td className="px-6 py-3 border">{driver.id}</td>
-                    <td className="px-6 py-3 border">{driver.name}</td>
-                    <td className="px-6 py-3 border">{driver.dob}</td>
-                    <td className="px-6 py-3 border">{driver.license}</td>
-                    <td className="px-6 py-3 border">{driver.contact}</td>
-                    <td className="px-6 py-3 border text-nowrap">{driver.vehicle}</td>
-                    <td className="px-6 py-3 border text-nowrap">{driver.route}</td>
-                    <td className="px-6 py-3 text-center flex">
-                      <button
-                        className="px-2 py-1 mr-3 text-white transition duration-300 bg-teal-600 rounded-lg hover:bg-teal-700 text-nowrap"
-                        onClick={() => openViewProfileModal(driver)}
-                      >
-                        <i className="mr-2 fas fa-eye"></i> View Profile
-                      </button>
-                      <button
-                        className="mr-3 text-blue-500 hover:text-blue-700"
-                        onClick={() => openEditModal(driver)}
-                      >
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => openDeleteModal(driver)}
-                      >
-                        <Delete size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              {drivers.length === 0 && (
+              {allbusesstaff?.length > 0 ? allbusesstaff?.map((driver) => (
+                <tr key={driver._id} className="border-b hover:bg-gray-100 text-xs sm:text-sm">
+                  <td className="px-6 py-3 border">{driver.role}</td>
+                  <td className="px-6 py-3 border">{driver._id}</td>
+                  <td className="px-6 py-3 border">{driver.name}</td>
+                  <td className="px-6 py-3 border">{driver.dateofBirth}</td>
+                  <td className="px-6 py-3 border">{driver.license}</td>
+                  <td className="px-6 py-3 border">{driver.contact}</td>
+                  <td className="px-6 py-3 border text-nowrap">{driver.vehicle}</td>
+                  <td className="px-6 py-3 border text-nowrap">{driver.route}</td>
+                  <td className="px-6 py-3 text-center flex">
+                    <button
+                      className="px-2 py-1 mr-3 text-white transition duration-300 bg-teal-600 rounded-lg hover:bg-teal-700 text-nowrap"
+                      onClick={() => openViewProfileModal(driver)}
+                    >
+                      <i className="mr-2 fas fa-eye"></i> View Profile
+                    </button>
+                    <button
+                      className="mr-3 text-blue-500 hover:text-blue-700"
+                      onClick={() => openEditModal(driver)}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => openDeleteModal(driver)}
+                    >
+                      <Delete size={18} />
+                    </button>
+                  </td>
+                </tr>
+              )) : null}
+              {allbusesstaff.length === 0 && (
                 <tr>
                   <td
                     colSpan="4"
@@ -360,7 +379,7 @@ const DriverDashboard = () => {
             <div className="grid grid-cols-2 gap-4 text-xs sm:text-sm">
               <div className="mb-4">
                 <label className="block text-gray-700">ID:</label>
-                <p className="text-gray-900">{selectedDriver.id}</p>
+                <p className="text-gray-900">{selectedDriver._id}</p>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700">Role:</label>
@@ -372,7 +391,7 @@ const DriverDashboard = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700">Date of Birth:</label>
-                <p className="text-gray-900">{selectedDriver.dob}</p>
+                <p className="text-gray-900">{selectedDriver.dateofBirth}</p>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700">License:</label>
@@ -419,10 +438,19 @@ const DriverDashboard = () => {
               className="grid grid-cols-1 gap-2 sm:grid-cols-2"
             >
               <div className="mb-4">
-                <label className="block text-gray-700">ID</label>
+                <label className="block text-gray-700">Email</label>
                 <input
                   type="text"
-                  name="id"
+                  name="email"
+                  required
+                  className="w-full p-2 border rounded-lg"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Password</label>
+                <input
+                  type="text"
+                  name="password"
                   required
                   className="w-full p-2 border rounded-lg"
                 />
@@ -566,15 +594,25 @@ const DriverDashboard = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">ID</label>
+                <label className="block text-gray-700">Email</label>
                 <input
                   type="text"
-                  name="id"
-                  defaultValue={selectedDriver.id}
+                  name="email"
+                  defaultValue={selectedDriver.email}
                   required
                   className="w-full p-2 border rounded-lg"
                 />
               </div>
+              {/* <div className="mb-4">
+                <label className="block text-gray-700">Password</label>
+                <input
+                  type="text"
+                  name="password"
+                  defaultValue={selectedDriver.password}
+                  required
+                  className="w-full p-2 border rounded-lg"
+                />
+              </div> */}
               <div className="mb-4">
                 <label className="block text-gray-700">Name</label>
                 <input
@@ -590,7 +628,11 @@ const DriverDashboard = () => {
                 <input
                   type="date"
                   name="dob"
-                  defaultValue={selectedDriver.dob}
+                  defaultValue={
+                    selectedDriver.dateofBirth
+                      ? new Date(selectedDriver.dateofBirth).toISOString().split("T")[0]
+                      : ""
+                  }
                   required
                   className="w-full p-2 border rounded-lg"
                 />

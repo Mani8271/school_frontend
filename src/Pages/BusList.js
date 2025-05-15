@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextField,
   Button,
@@ -9,10 +9,22 @@ import {
 } from "@mui/material";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import { useBranch } from "../Pages/Branches";
+import { AddBuslistInitiate } from "../redux/actions/schoolbus/buslist/addbuslistAction";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllBuslistInitiate } from "../redux/actions/schoolbus/buslist/getallbuslistAction";
+import { UpdateBuslistInitiate } from "../redux/actions/schoolbus/buslist/updatebuslistAction";
+import { DeleteBuslistInitiate } from "../redux/actions/schoolbus/buslist/deletebuslistAction";
 
 const BusList = () => {
+  const dispatch = useDispatch();
+  const { data: allbuses = [] } = useSelector((state) => state.getallbuslist.buslist || {});
+  useEffect(() => {
+    dispatch(getAllBuslistInitiate());
+  }, []);
+  console.log("i am all allbuses", allbuses);
   const [openModal, setOpenModal] = useState(false);
   const [formData, setFormData] = useState({
+    _id: "",
     busNumber: "",
     busModel: "",
     capacity: "",
@@ -30,12 +42,12 @@ const BusList = () => {
     { branch: "City Branch", busNumber: "B008", busModel: "Model E", capacity: "55", status: "Active" },
     { branch: "Westside Branch", busNumber: "B009", busModel: "Model F", capacity: "50", status: "Active" },
     { branch: "Main Branch", busNumber: "B010", busModel: "Model G", capacity: "60", status: "Inactive" },
-  ]);  
+  ]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [entriesCount, setEntriesCount] = useState(5); // Entries per page
+  const [entriesCount, setEntriesCount] = useState(1); // Entries per page
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const { selectedBranch } = useBranch();
-const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch);
+  // const branchSpecificBuses = allbuses.filter((bus) => bus.branch === selectedBranch);
 
 
   // Modal Handlers
@@ -54,21 +66,44 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
   // Save Bus Handler (Create or Update)
   const handleSaveBus = () => {
     if (editIndex !== null) {
-      // Update existing bus
-      const updatedBuses = [...buses];
-      updatedBuses[editIndex] = formData;
-      setBuses(updatedBuses);
+      // // Update existing bus
+      // const updatedBuses = [...buses];
+      // updatedBuses[editIndex] = formData;
+      // setBuses(updatedBuses);
+      dispatch(UpdateBuslistInitiate(formData, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated teacher list.');
+          dispatch(getAllBuslistInitiate());
+          handleCloseModal();
+        } else {
+          console.error('Failed to update student.');
+        }
+      }))
     } else {
       // Add new bus
-      setBuses([...buses, formData]);
+      const formdata = {
+        busNumber: formData?.busNumber,
+        busModel: formData?.busModel,
+        capacity: formData?.capacity,
+        status: formData?.status,
+      }
+      dispatch(AddBuslistInitiate(formdata, (success) => {
+        if (success) {
+          console.log('add successful, fetching add student list.');
+          dispatch(getAllBuslistInitiate());
+          handleCloseModal();
+
+        } else {
+          console.error('Failed to add teachet.');
+        }
+      }))
     }
-    handleCloseModal();
   };
 
   // Edit Bus Handler
   const handleEditBus = (index) => {
     setEditIndex(index);
-    setFormData(buses[index]);
+    setFormData(allbuses[index]);
     handleOpenModal();
   };
 
@@ -80,27 +115,50 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
 
   const handleDeleteBus = (index) => {
     const isConfirmed = window.confirm("Are you sure you want to delete this bus?");
+    const id = allbuses?.[index]?._id
     if (isConfirmed) {
-      const updatedBuses = buses.filter((_, i) => i !== index);
-      setBuses(updatedBuses);
+      if (id) {
+        dispatch(
+          DeleteBuslistInitiate({ _id: id }, (success) => {
+            if (success) {
+              console.log('Delete successful, fetching updated student list.');
+              dispatch(getAllBuslistInitiate());
+            } else {
+              console.error('Failed to delete student.');
+            }
+          })
+        );
+      }
     }
-  };  
+  };
 
   // Filter Buses Based on Search Query
-  const filteredBuses = branchSpecificBuses.filter((bus) =>
+  // const filteredBuses = allbuses?.filter((bus) =>
 
-    Object.values(bus)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+  //   Object.values(bus)
+  //     .join(" ")
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase())
+  // );
+
+  const filteredBuses = allbuses?.filter((bus) => {
+    const lowercasedQuery = searchQuery?.toLowerCase();
+    return (
+      bus.busNumber.toLowerCase().includes(lowercasedQuery) ||
+      bus.busModel.toLowerCase().includes(lowercasedQuery) ||
+      bus._id.toLowerCase().includes(lowercasedQuery) ||
+      bus.capacity.toLowerCase().includes(lowercasedQuery)
+    );
+  });
+
+  console.log("filteredBuses", filteredBuses)
 
   // Pagination logic
-  const totalPages = Math.ceil(branchSpecificBuses.length / entriesCount);
+  const totalPages = Math.ceil(allbuses.length / entriesCount);
   const startIndex = (currentPage - 1) * entriesCount;
   const endIndex = startIndex + entriesCount;
-  const currentBuses = filteredBuses.slice(startIndex, endIndex);
-
+  const currentBuses = allbuses.slice(startIndex, endIndex);
+  console.log('i am currenrbusse', currentBuses)
   const handleEntriesChange = (e) => {
     setEntriesCount(Number(e.target.value));
     setCurrentPage(1); // Reset to page 1 when entries per page change
@@ -159,7 +217,7 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
           onChange={handleEntriesChange}
           className="px-2 py-1 text-black bg-white border rounded w-[50px]"
         >
-          {[5, 10, 15, 20].map((count) => (
+          {[1, 2, 3, 4].map((count) => (
             <option key={count} value={count}>
               {count}
             </option>
@@ -180,7 +238,7 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
             </tr>
           </thead>
           <tbody>
-            {currentBuses.length > 0 ? (
+            {!searchQuery ? currentBuses.length > 0 ? (
               currentBuses.map((bus, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border border-gray-300">{bus.busNumber}</td>
@@ -214,7 +272,41 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
                   No buses found.
                 </td>
               </tr>
-            )}
+            ) : null}
+
+            {/* search */}
+            {searchQuery ? currentBuses.length > 0 ? (
+              currentBuses?.map((bus, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-2 border border-gray-300">{bus.busNumber}</td>
+                  <td className="px-4 py-2 border border-gray-300">{bus.busModel}</td>
+                  <td className="px-4 py-2 border border-gray-300">{bus.capacity}</td>
+                  <td className="px-4 py-2 border border-gray-300">{bus.status}</td>
+                  <td className="flex px-4 py-4 text-center border-b border-gray-300">
+                    <IconButton
+                      aria-label="edit"
+                      color="primary"
+                      onClick={() => handleEditBus(index)}
+                    >
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      color="error"
+                      onClick={() => handleDeleteBus(index)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="13" className="px-4 py-3 text-center text-gray-500">
+                  No Bus List found
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>
@@ -224,27 +316,25 @@ const branchSpecificBuses = buses.filter((bus) => bus.branch === selectedBranch)
         <Button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className={`px-4 py-2 border transition ${
-            currentPage === 1
-              ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
-              : "text-gray-900 border-gray-400 hover:bg-gray-100"
-          }`}
+          className={`px-4 py-2 border transition ${currentPage === 1
+            ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
+            : "text-gray-900 border-gray-400 hover:bg-gray-100"
+            }`}
         >
           Previous
         </Button>
 
         <span className="text-gray-700 font-medium">
-        Page {currentPage} of {totalPages}
-      </span>
+          Page {currentPage} of {totalPages}
+        </span>
 
         <Button
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 border transition ${
-            currentPage === totalPages
-              ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
-              : "text-gray-900 border-gray-400 hover:bg-gray-100"
-          }`}
+          className={`px-4 py-2 border transition ${currentPage === totalPages
+            ? "text-gray-400 border-gray-300 cursor-not-allowed bg-gray-100"
+            : "text-gray-900 border-gray-400 hover:bg-gray-100"
+            }`}
         >
           Next
         </Button>

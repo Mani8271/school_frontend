@@ -332,12 +332,12 @@ const TeachingStaff = () => {
     return csvContent;
   };
 
-  const filteredTeachers = branchSpecificTeachers.filter((teacher) => {
-    const lowercasedQuery = searchQuery.toLowerCase();
+  const filteredTeachers = allteachers?.filter((teacher) => {
+    const lowercasedQuery = searchQuery?.toLowerCase();
     return (
-      teacher.name.toLowerCase().includes(lowercasedQuery) ||
-      teacher.id.toLowerCase().includes(lowercasedQuery) ||
-      teacher.department.toLowerCase().includes(lowercasedQuery)
+      teacher.teacherName.toLowerCase().includes(lowercasedQuery) ||
+      teacher._id.toLowerCase().includes(lowercasedQuery) ||
+      teacher.subject.toLowerCase().includes(lowercasedQuery)
     );
   });
 
@@ -551,7 +551,7 @@ const TeachingStaff = () => {
           </thead>
           {/* Table Body */}
           <tbody className="divide-y">
-            {allteachers.length > 0 ? (
+            {!searchQuery ? allteachers.length > 0 ? (
               allteachers.map((teacher) => (
                 <tr key={teacher.id} className="hover:bg-gray-50 text-sm md:text-base">
                   {["_id", "teacherName", "subject", "gender", "qualification", "experience", "joiningDate", "email", "mobileNumber", "teacherName", "password", "address"].map((key) => (
@@ -573,7 +573,30 @@ const TeachingStaff = () => {
                   No teaching staff found
                 </td>
               </tr>
-            )}
+            ): null}
+            {searchQuery ? filteredTeachers.length > 0 ? (
+              allteachers.map((teacher) => (
+                <tr key={teacher.id} className="hover:bg-gray-50 text-sm md:text-base">
+                  {["_id", "teacherName", "subject", "gender", "qualification", "experience", "joiningDate", "email", "mobileNumber", "teacherName", "password", "address"].map((key) => (
+                    <td key={key} className="px-4 py-3 border truncate max-w-[150px] sm:max-w-[150px]">{teacher[key]}</td>
+                  ))}
+                  <td className="px-4 py-3 flex space-x-4">
+                    <button onClick={() => handleEditClick(teacher)} className="text-blue-600 hover:text-blue-800">
+                      <Edit className="inline-block mr-1" />
+                    </button>
+                    <button onClick={() => window.confirm("Are you sure?") && handleDeleteClick(teacher._id)} className="text-red-600 hover:text-red-800">
+                      <Delete className="inline-block mr-1" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="13" className="px-4 py-3 text-center text-gray-500">
+                  No teaching staff found
+                </td>
+              </tr>
+            ): null}
           </tbody>
         </table>
       </div>

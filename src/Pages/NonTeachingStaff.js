@@ -438,30 +438,32 @@ const NonTeachingStaff = () => {
 
   const handleDeleteClick = (id) => {
     // setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
-        if (id) {
-          dispatch(
-            DeleteNonteacherInitiate({ _id: id }, (success) => {
-              if (success) {
-                console.log('Delete successful, fetching updated student list.');
-                dispatch(getAllnonTeachersInitiate());
-              } else {
-                console.error('Failed to delete student.');
-              }
-            })
-          );
-        }
+    if (id) {
+      dispatch(
+        DeleteNonteacherInitiate({ _id: id }, (success) => {
+          if (success) {
+            console.log('Delete successful, fetching updated student list.');
+            dispatch(getAllnonTeachersInitiate());
+          } else {
+            console.error('Failed to delete student.');
+          }
+        })
+      );
+    }
   };
 
-  const filteredStaff = branchSpecificTeachers.filter((staff) => {
+  const filteredStaff = allnonteachers.filter((staff) => {
     const lowercasedQuery = searchQuery.toLowerCase();
 
     return (
       (staff.name?.toLowerCase() || "").includes(lowercasedQuery) ||
-      (staff.id?.toLowerCase() || "").includes(lowercasedQuery) ||
-      (staff.subject?.toLowerCase() || "").includes(lowercasedQuery) ||
+      (staff._id?.toLowerCase() || "").includes(lowercasedQuery) ||
+      (staff.designation?.toLowerCase() || "").includes(lowercasedQuery) ||
       (staff.department?.toLowerCase() || "").includes(lowercasedQuery)
     );
   });
+
+
 
   useEffect(() => {
     setCurrentPage(1);
@@ -758,7 +760,7 @@ const NonTeachingStaff = () => {
             </tr>
           </thead>
           <tbody className="overflow-y-auto max-h-[400px]">
-            {allnonteachers.length > 0 ? (
+            {!searchQuery ? allnonteachers.length > 0 ? (
               allnonteachers.map((s) => (
                 <tr key={s.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 border ">{s._id}</td>
@@ -793,7 +795,44 @@ const NonTeachingStaff = () => {
                   No staff found
                 </td>
               </tr>
-            )}
+            ) : null}
+
+            {searchQuery ? filteredStaff.length > 0 ? (
+              filteredStaff.map((s) => (
+                <tr key={s.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 border ">{s._id}</td>
+                  <td className="px-4 py-3 border text-nowrap">{s.name}</td>
+                  <td className="px-4 py-3border">{s.gender}</td>
+                  <td className="px-4 py-3 border">{s.designation}</td>
+                  <td className="px-4 py-3 border">{s.department}</td>
+                  <td className="px-4 py-3 border">{s.experience}</td>
+                  <td className="px-4 py-3 border text-nowrap">{s.joiningDate}</td>
+                  <td className="px-4 py-3 border">{s.email}</td>
+                  <td className="px-4 py-3 border">{s.mobileNumber}</td>
+                  <td className="px-4 py-3 border text-nowrap">{s.address}</td>
+                  <td className="px-4 py-3 border">{s.city}</td>
+                  <td className="flex gap-4 px-4 py-3 mt-2">
+                    <Edit
+                      className="text-blue-500 cursor-pointer hover:text-blue-800"
+                      onClick={() => handleEditClick(s)}
+                    />
+                    <Delete
+                      className="text-red-500 cursor-pointer hover:text-red-800"
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this staff?")) {
+                          handleDeleteClick(s._id);
+                        }
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))) : (
+              <tr>
+                <td colSpan="15" className="text-center py-4 text-gray-500">
+                  No staff found
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>
