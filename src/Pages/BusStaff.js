@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/getallbusstaffAction";
 import { AddBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/addbusstaffAction";
 import { UpdateBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/updatebusstaffAction";
+import { DeleteBusstaffInitiate } from "../redux/actions/schoolbus/busstaff/deletebusstaffAction";
 
 const DriverDashboard = () => {
   const dispatch = useDispatch();
@@ -195,7 +196,7 @@ const DriverDashboard = () => {
       _id: selectedDriver._id,
       role: formData.get("role"),
       name: formData.get("name"),
-      dob: formData.get("dob"),
+      dateofBirth: formData.get("dob"),
       license: formData.get("license"),
       contact: formData.get("contact"),
       vehicle: formData.get("vehicle"),
@@ -212,22 +213,33 @@ const DriverDashboard = () => {
           ? URL.createObjectURL(formData.get("licensePhoto"))
           : selectedDriver.licensePhoto,
     };
-        dispatch(UpdateBusstaffInitiate(updatedDriver, (success) => {
-            if (success) {
-              console.log('Delete successful, fetching updated teacher list.');
-              dispatch(getAllBusstaffInitiate());
-              closeEditModal();
-            } else {
-              console.error('Failed to update student.');
-            }
-          }))
-    
+    dispatch(UpdateBusstaffInitiate(updatedDriver, (success) => {
+      if (success) {
+        console.log('Delete successful, fetching updated teacher list.');
+        dispatch(getAllBusstaffInitiate());
+        closeEditModal();
+      } else {
+        console.error('Failed to update student.');
+      }
+    }))
+
   };
 
   // Delete Driver
   const confirmDeleteDriver = () => {
-    setDrivers(drivers.filter((driver) => driver.id !== driverToDelete.id));
-    closeDeleteModal();
+    // setDrivers(drivers.filter((driver) => driver.id !== driverToDelete.id));
+    // closeDeleteModal();
+    dispatch(
+      DeleteBusstaffInitiate({ _id: driverToDelete._id }, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated student list.');
+          dispatch(getAllBusstaffInitiate());
+          closeDeleteModal()
+        } else {
+          console.error('Failed to delete student.');
+        }
+      })
+    );
   };
 
   // Open Modals
@@ -263,6 +275,19 @@ const DriverDashboard = () => {
     setDriverToDelete(null);
   };
 
+  const filteredBusesstaff = allbusesstaff?.filter((bus) => {
+    const lowercasedQuery = searchQuery?.toLowerCase();
+    return (
+      bus.role.toLowerCase().includes(lowercasedQuery) ||
+      bus.name.toLowerCase().includes(lowercasedQuery) ||
+      bus._id.toLowerCase().includes(lowercasedQuery) ||
+      // bus.dateofBirth.toLowerCase().includes(lowercasedQuery) ||
+      bus.license.toLowerCase().includes(lowercasedQuery) ||
+      bus.contact.toLowerCase().includes(lowercasedQuery) ||
+      bus.vehicle.toLowerCase().includes(lowercasedQuery) ||
+      bus.route.toLowerCase().includes(lowercasedQuery)
+    );
+  });
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="mb-6 text-2xl sm:text-3xl font-bold text-center text-gray-800">
@@ -303,7 +328,7 @@ const DriverDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {allbusesstaff?.length > 0 ? allbusesstaff?.map((driver) => (
+              {!searchQuery ? allbusesstaff?.length > 0 ? allbusesstaff?.map((driver) => (
                 <tr key={driver._id} className="border-b hover:bg-gray-100 text-xs sm:text-sm">
                   <td className="px-6 py-3 border">{driver.role}</td>
                   <td className="px-6 py-3 border">{driver._id}</td>
@@ -334,8 +359,7 @@ const DriverDashboard = () => {
                     </button>
                   </td>
                 </tr>
-              )) : null}
-              {allbusesstaff.length === 0 && (
+              )) : (
                 <tr>
                   <td
                     colSpan="4"
@@ -344,7 +368,49 @@ const DriverDashboard = () => {
                     No bus staff found.
                   </td>
                 </tr>
-              )}
+              ) : null}
+
+              {searchQuery ? filteredBusesstaff?.length > 0 ? filteredBusesstaff?.map((driver) => (
+                <tr key={driver._id} className="border-b hover:bg-gray-100 text-xs sm:text-sm">
+                  <td className="px-6 py-3 border">{driver.role}</td>
+                  <td className="px-6 py-3 border">{driver._id}</td>
+                  <td className="px-6 py-3 border">{driver.name}</td>
+                  <td className="px-6 py-3 border">{driver.dateofBirth}</td>
+                  <td className="px-6 py-3 border">{driver.license}</td>
+                  <td className="px-6 py-3 border">{driver.contact}</td>
+                  <td className="px-6 py-3 border text-nowrap">{driver.vehicle}</td>
+                  <td className="px-6 py-3 border text-nowrap">{driver.route}</td>
+                  <td className="px-6 py-3 text-center flex">
+                    <button
+                      className="px-2 py-1 mr-3 text-white transition duration-300 bg-teal-600 rounded-lg hover:bg-teal-700 text-nowrap"
+                      onClick={() => openViewProfileModal(driver)}
+                    >
+                      <i className="mr-2 fas fa-eye"></i> View Profile
+                    </button>
+                    <button
+                      className="mr-3 text-blue-500 hover:text-blue-700"
+                      onClick={() => openEditModal(driver)}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => openDeleteModal(driver)}
+                    >
+                      <Delete size={18} />
+                    </button>
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="px-6 py-3 text-center text-gray-600"
+                  >
+                    No bus staff found.
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>

@@ -32,6 +32,14 @@ import AddbusstaffReducer from "./schoolbus/busstaff/addbusstaffReducer";
 import DeletebusstaffReducer from "./schoolbus/busstaff/deletebusstaffReducer";
 import GetAllBusstaffReducer from "./schoolbus/busstaff/getallbusstaffReducer";
 import UpdatebusstaffReducer from "./schoolbus/busstaff/updatebusstaffReducer";
+import AddFessReducer from "./fees/addFeesReducer";
+import UpdatefeesReducer from "./fees/updateFeesReducer";
+import GetAllFeesReducer from "./fees/getAllfeesdataReducer";
+import DeleteFeesReducer from "./fees/deleteFeesReducer";
+import AddPayrollReducer from "./payroll/addPayrollReducer";
+import UpdatepayrollReducer from "./payroll/updatePayrollReducer";
+import DeletePayrollReducer from "./payroll/deletePayrollReducer";
+import GetAllPayrollReducer from "./payroll/getAllpayrollReducer";
 
 
 
@@ -73,6 +81,16 @@ const rootReducer = combineReducers({
   updatebusstaff: DeletebusstaffReducer,
   getallbusstaff: GetAllBusstaffReducer,
   deletebusstaff: UpdatebusstaffReducer,
+  // payroll
+  addpayroll: AddPayrollReducer,
+  updatepayroll: UpdatepayrollReducer,
+  deletepayroll: DeletePayrollReducer,
+  getallpayroll: GetAllPayrollReducer,
+  // fees
+  addfees: AddFessReducer,
+  getallfees: GetAllFeesReducer,
+  updatefees: UpdatefeesReducer,
+  deletefees: DeleteFeesReducer,
   // user profile
   userdetails: GetuserprofileReducer,
   updateduserdetails: UpdateuserprofileReducer,

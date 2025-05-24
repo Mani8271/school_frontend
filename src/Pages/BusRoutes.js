@@ -69,7 +69,7 @@ const BusRoutes = () => {
   });
 
 
-  const totalPages = Math.ceil(branchSpecificData.length / entriesCount);
+  const totalPages = Math.ceil(allbusesroutes.length / entriesCount);
   const currentData = filteredData.slice((currentPage - 1) * entriesCount, currentPage * entriesCount);
 
 
@@ -142,7 +142,7 @@ const BusRoutes = () => {
   // Open modal for editing with prefilled data
   const handleEdit = (index) => {
     setEditIndex(index);
-    setFormData(allbusesroutes[index]);
+    setFormData(allbusesroutes?.find((item) => item?._id === index));
     handleOpenModal();
   };
 
@@ -169,7 +169,7 @@ const BusRoutes = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this row?");
     if (!confirmDelete) return;
 
-    const id = allbusesroutes?.[index]?._id
+    const id = allbusesroutes?.find((item) => item?._id === index)
     if (confirmDelete) {
       if (id) {
         dispatch(
@@ -255,12 +255,12 @@ const BusRoutes = () => {
                     <td className="px-4 py-2 border border-gray-300">{row.students}</td>
                     <td className="px-4 py-2 text-center border border-gray-300 whitespace-nowrap">
                       <Tooltip title="Edit">
-                        <IconButton color="primary" onClick={() => handleEdit(index)}>
+                        <IconButton color="primary" onClick={() => handleEdit(row?._id)}>
                           <Edit />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton color="error" onClick={() => handleDelete(index)}>
+                        <IconButton color="error" onClick={() => handleDelete(row?._id)}>
                           <Delete />
                         </IconButton>
                       </Tooltip>
@@ -287,12 +287,12 @@ const BusRoutes = () => {
                     <td className="px-4 py-2 border border-gray-300">{row.students}</td>
                     <td className="px-4 py-2 text-center border border-gray-300 whitespace-nowrap">
                       <Tooltip title="Edit">
-                        <IconButton color="primary" onClick={() => handleEdit(index)}>
+                        <IconButton color="primary" onClick={() => handleEdit(row?._id)}>
                           <Edit />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton color="error" onClick={() => handleDelete(index)}>
+                        <IconButton color="error" onClick={() => handleDelete(row?._id)}>
                           <Delete />
                         </IconButton>
                       </Tooltip>
