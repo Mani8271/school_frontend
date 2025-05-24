@@ -1,6 +1,6 @@
 import API from "../../../../API/API";
 const api = new API();
-const endPoint = "TeachingStaff/add-teacher";
+const endPoint = "teachingstaff/add-teacher";
 
 export const addteachingstaffApi = async (formData) => {
     console.log("formdataapi", formData);

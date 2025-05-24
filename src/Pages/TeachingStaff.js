@@ -386,7 +386,8 @@ const TeachingStaff = () => {
     formdata.append("password", newTeacher.password);
     formdata.append("ProfilePicture", newTeacher.ProfilePicture);
 
-    if (formdata && !editingTeacher) {
+  if (formdata && !editingTeacher) {
+      console.log("hgdhg",formdata)
       dispatch(AddTeachingstaffInitiate(formdata, (success) => {
         if (success) {
           console.log('add successful, fetching add student list.');
