@@ -2,17 +2,30 @@ import React, { useState, useEffect, useRef } from "react";
 import jsPDF from "jspdf";
 import { FaEdit, FaTrash, FaDownload, FaPrint, FaTimes } from "react-icons/fa";
 import { useBranch } from "../Pages/Branches"; // Import the branch hook
+import { useDispatch, useSelector } from "react-redux";
+import { getAllFeesInitiate } from "../redux/actions/fees/getAllfeesdataAction";
+import { AddFeesInitiate } from "../redux/actions/fees/addFeesAction";
+import { UpdateFeesInitiate } from "../redux/actions/fees/updateFeesAction";
+import { DeleteFeesInitiate } from "../redux/actions/fees/deleteFeesAction";
 
 const InvoicePage = () => {
+  const dispatch = useDispatch();
+  const { data: allfeesdata = [] } = useSelector((state) => state.getallfees.fees || {});
+  useEffect(() => {
+    dispatch(getAllFeesInitiate());
+  }, []);
+  console.log("i am all allfeesdata", allfeesdata);
   const [admissionNumber, setAdmissionNumber] = useState("");
   const [studentName, setStudentName] = useState("");
   const [className, setClassName] = useState("");
   const [section, setSection] = useState("");
+  const [status, setStatus] = useState("");
   const [tuitionFee, setTuitionFee] = useState("");
   const [transportFee, setTransportFee] = useState("");
   const [stationaryFee, setStationaryFee] = useState("");
   const [admissionFee, setAdmissionFee] = useState("");
   const [otherFees, setOtherFees] = useState("");
+  const [_id, setid] = useState('')
   const [storedReceipts, setStoredReceipts] = useState([
     {
       admissionNumber: "12345",
@@ -57,7 +70,7 @@ const InvoicePage = () => {
       createdAt: "2025-01-27 11:30",
     },
   ]);
-  
+
   const [isFormValid, setIsFormValid] = useState(true);
   // const [receipt, setReceipt] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -114,18 +127,64 @@ const InvoicePage = () => {
 
     if (currentIndex !== null) {
       // If editing an existing receipt, update it
-      setStoredReceipts((prevReceipts) => {
-        const updatedReceipts = [...prevReceipts];
-        updatedReceipts[currentIndex] = newReceipt; // Update the receipt at the correct index
-        return updatedReceipts;
-      });
+      const formdata = {
+        _id: _id,
+        admissionNumber: admissionNumber,
+        admissionFee: admissionFee,
+        studentName: studentName,
+        class: className,
+        section: section,
+        tutionFee: Number(tuitionFee),
+        transportFee: Number(transportFee),
+        stationaryFee: Number(stationaryFee),
+        otherFees: Number(otherFees),
+        status: status,
+      }
+      // setStoredReceipts((prevReceipts) => {
+      //   const updatedReceipts = [...prevReceipts];
+      //   updatedReceipts[currentIndex] = newReceipt; // Update the receipt at the correct index
+      //   return updatedReceipts;
+      // });
+      dispatch(UpdateFeesInitiate(formdata, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated teacher list.');
+          dispatch(getAllFeesInitiate());
+          resetForm();
+          setShowModal(false);
+        } else {
+          console.error('Failed to update student.');
+        }
+      }))
+
     } else {
       // If creating a new invoice, add it to the list
-      setStoredReceipts((prevReceipts) => [...prevReceipts, newReceipt]);
+      // setStoredReceipts((prevReceipts) => [...prevReceipts, newReceipt]);
+      const formdata = {
+        admissionNumber: admissionNumber,
+        admissionFee: admissionFee,
+        studentName: studentName,
+        class: className,
+        section: section,
+        tutionFee: Number(tuitionFee),
+        transportFee: Number(transportFee),
+        stationaryFee: Number(stationaryFee),
+        otherFees: Number(otherFees),
+        status: status,
+      }
+      dispatch(AddFeesInitiate(formdata, (success) => {
+        if (success) {
+          console.log('add successful, fetching add student list.');
+          dispatch(getAllFeesInitiate());
+          resetForm();
+          setShowModal(false);
+
+        } else {
+          console.error('Failed to add teachet.');
+        }
+      }))
     }
 
-    resetForm();
-    setShowModal(false); // Close the modal after saving
+    // Close the modal after saving
   };
 
   const resetForm = () => {
@@ -143,27 +202,41 @@ const InvoicePage = () => {
   };
 
   const handleEditReceipt = (index) => {
-    const receipt = storedReceipts[index];
-    setAdmissionNumber(receipt.admissionNumber);
+    const receipt = allfeesdata?.find((item) => item?._id === index);
+    console.log(receipt)
+    setAdmissionNumber(receipt?.admissionNumber);
     setStudentName(receipt.studentName);
-    setClassName(receipt.className);
+    setClassName(receipt.class);
     setSection(receipt.section);
-    setTuitionFee(receipt.tuitionFee);
+    setTuitionFee(receipt.tutionFee);
     setTransportFee(receipt.transportFee);
     setStationaryFee(receipt.stationaryFee);
     setAdmissionFee(receipt.admissionFee);
     setOtherFees(receipt.otherFees);
-  
+    setStatus(receipt.status)
+    setid(receipt?._id)
     // const updatedReceipts = storedReceipts.filter((_, i) => i !== index);
     // setStoredReceipts(updatedReceipts);
     setCurrentIndex(index);
     setShowModal(true); // Open the modal after setting the form
   };
-  
+
 
   const handleDeleteReceipt = (index) => {
-    const updatedReceipts = storedReceipts.filter((_, i) => i !== index);
-    setStoredReceipts(updatedReceipts);
+    // const updatedReceipts = storedReceipts.filter((_, i) => i !== index);
+    // setStoredReceipts(updatedReceipts);
+    const receipt = allfeesdata?.find((item) => item?._id === index);
+    dispatch(
+      DeleteFeesInitiate({ _id: receipt._id }, (success) => {
+        if (success) {
+          console.log('Delete successful, fetching updated student list.');
+          dispatch(getAllFeesInitiate());
+          // closeDeleteModal()
+        } else {
+          console.error('Failed to delete student.');
+        }
+      })
+    );
   };
   const { selectedBranch } = useBranch(); // Get the selected branch
   const branchFilteredReceipts = storedReceipts.filter((receipt) => receipt.branch === selectedBranch);
@@ -229,7 +302,7 @@ const InvoicePage = () => {
     printWindow.document.close();
     printWindow.print();
   };
-  
+
   const formRef = useRef(null);
 
   // Close modal when pressing ESC
@@ -279,17 +352,17 @@ const InvoicePage = () => {
     if (e.target === e.currentTarget) setShowModal(false);
   };
 
-  const filteredReceipts = branchFilteredReceipts.filter((receipt) =>
+  const filteredReceipts = allfeesdata.filter((receipt) =>
     receipt.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     receipt.admissionNumber.toString().includes(searchTerm)
   );
-  
+
   // Reset pagination when search query changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  
+
   // Calculate total pages
   const totalPages = Math.ceil(filteredReceipts.length / itemsPerPage);
 
@@ -324,36 +397,36 @@ const InvoicePage = () => {
           <table className="w-full min-w-[768px] md:min-w-[900px] lg:min-w-[1024px] xl:min-w-[1200px] border border-gray-300">
             <thead className="sticky top-0 z-10 bg-gray-200 border-b">
               <tr className="text-sm md:text-base">
-              <th className="px-3 py-2 border whitespace-nowrap">Admission No.</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Student Name</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Class</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Tuition Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Transport Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Stationary Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Admission Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Other Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Total Fee</th>
-              <th className="px-3 py-2 border whitespace-nowrap">Actions</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Admission No.</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Student Name</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Class</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Tuition Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Transport Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Stationary Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Admission Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Other Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Total Fee</th>
+                <th className="px-3 py-2 border whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {currentReceipts.length > 0 ? (
-                currentReceipts.map((receipt, index) => (
+              {!searchTerm ? allfeesdata.length > 0 ? (
+                allfeesdata.map((receipt, index) => (
                   <tr key={index} className="text-sm md:text-base">
                     <td className="px-4 py-2 border">{receipt.admissionNumber}</td>
                     <td className="px-4 py-2 border">{receipt.studentName}</td>
-                    <td className="px-4 py-2 border">{receipt.className}</td>
-                    <td className="px-4 py-2 border">{receipt.tuitionFee}</td>
+                    <td className="px-4 py-2 border">{receipt.class}</td>
+                    <td className="px-4 py-2 border">{receipt.tutionFee}</td>
                     <td className="px-4 py-2 border">{receipt.transportFee}</td>
                     <td className="px-4 py-2 border">{receipt.stationaryFee}</td>
                     <td className="px-4 py-2 border">{receipt.admissionFee}</td>
                     <td className="px-4 py-2 border">{receipt.otherFees}</td>
-                    <td className="px-4 py-2 border">{receipt.totalFee}</td>
+                    <td className="px-4 py-2 border">{receipt.admissionFee + receipt.otherFees + receipt.stationaryFee + receipt.transportFee + receipt.tutionFee}</td>
                     <td className="px-4 py-2 border text-center">
                       <div className="flex gap-3 justify-center items-center space-x-0">
-                        <FaEdit onClick={() => handleEditReceipt(index)} className="text-blue-500 cursor-pointer" />
+                        <FaEdit onClick={() => handleEditReceipt(receipt?._id)} className="text-blue-500 cursor-pointer" />
                         <FaTrash
-                          onClick={() => window.confirm("Are you sure you want to delete this receipt?") && handleDeleteReceipt(index)}
+                          onClick={() => window.confirm("Are you sure you want to delete this receipt?") && handleDeleteReceipt(receipt?._id)}
                           className="text-red-500 cursor-pointer"
                         />
                         <FaDownload onClick={() => handleDownloadReceipt(receipt)} className="text-black cursor-pointer" />
@@ -369,7 +442,40 @@ const InvoicePage = () => {
                     <p className="text-sm text-gray-400">Add some receipts to get started.</p>
                   </td>
                 </tr>
-              )}
+              ) : null}
+              {searchTerm ? filteredReceipts.length > 0 ? (
+                filteredReceipts.map((receipt, index) => (
+                  <tr key={index} className="text-sm md:text-base">
+                    <td className="px-4 py-2 border">{receipt.admissionNumber}</td>
+                    <td className="px-4 py-2 border">{receipt.studentName}</td>
+                    <td className="px-4 py-2 border">{receipt.class}</td>
+                    <td className="px-4 py-2 border">{receipt.tutionFee}</td>
+                    <td className="px-4 py-2 border">{receipt.transportFee}</td>
+                    <td className="px-4 py-2 border">{receipt.stationaryFee}</td>
+                    <td className="px-4 py-2 border">{receipt.admissionFee}</td>
+                    <td className="px-4 py-2 border">{receipt.otherFees}</td>
+                    <td className="px-4 py-2 border">{receipt.admissionFee + receipt.otherFees + receipt.stationaryFee + receipt.transportFee + receipt.tutionFee}</td>
+                    <td className="px-4 py-2 border text-center">
+                      <div className="flex gap-3 justify-center items-center space-x-0">
+                        <FaEdit onClick={() => handleEditReceipt(receipt?._id)} className="text-blue-500 cursor-pointer" />
+                        <FaTrash
+                          onClick={() => window.confirm("Are you sure you want to delete this receipt?") && handleDeleteReceipt(receipt?._id)}
+                          className="text-red-500 cursor-pointer"
+                        />
+                        <FaDownload onClick={() => handleDownloadReceipt(receipt)} className="text-black cursor-pointer" />
+                        <FaPrint onClick={() => handlePrintReceipt(receipt)} className="text-black cursor-pointer" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center py-4 text-gray-500">
+                    <p>No invoices found.</p>
+                    <p className="text-sm text-gray-400">Add some receipts to get started.</p>
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>
@@ -381,11 +487,10 @@ const InvoicePage = () => {
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className={`px-4 py-2 ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-700"
-          }`}
+          className={`px-4 py-2 ${currentPage === 1
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-blue-500 text-white hover:bg-blue-700"
+            }`}
         >
           Previous
         </button>
@@ -397,11 +502,10 @@ const InvoicePage = () => {
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 ${
-            currentPage === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-700"
-          }`}
+          className={`px-4 py-2 ${currentPage === totalPages
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-blue-500 text-white hover:bg-blue-700"
+            }`}
         >
           Next
         </button>
@@ -471,6 +575,18 @@ const InvoicePage = () => {
                     <option value="A">A</option>
                     <option value="B">B</option>
                     <option value="C">C</option>
+                  </select>
+                </div>
+                <div className="w-1/3">
+                  <label className="block text-sm font-medium text-gray-700">Status</label>
+                  <select
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="">Select Section</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
                   </select>
                 </div>
                 <div className="w-1/3">

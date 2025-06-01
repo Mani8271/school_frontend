@@ -21,7 +21,7 @@ const StudentsList = () => {
   const [editingStudent, setEditingStudent] = useState(null); // Track which student is being edited
   const [newStudent, setNewStudent] = useState({
     _id: "", studentName: "", rollno: "", gender: "", bloodgroup: "", parentName: "", relation: "", class: "", section: "", address: "", city: "",
-    dateofbirth: "", email: "", mobile: "", ProfilePicture: null
+    dateofbirth: "", email: "", mobile: "", ProfilePicture: null, password: ""
   });
   console.log("editingStudent", editingStudent)
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
@@ -100,7 +100,7 @@ const StudentsList = () => {
     formdata.append("email", newStudent.email);
     formdata.append("mobile", newStudent.mobile);
     formdata.append("ProfilePicture", newStudent.ProfilePicture);
-
+    formdata.append("password", newStudent.password);
     if (formdata && !editingStudent) {
       dispatch(AddStudentInitiate(formdata, (success) => {
         if (success) {
@@ -143,7 +143,8 @@ const StudentsList = () => {
       !newStudent.bloodgroup?.trim() ||
       !newStudent.relation?.trim() ||
       !newStudent?.dateofbirth ||
-      !newStudent?.rollno
+      !newStudent?.rollno ||
+      !newStudent?.password
       // ||!newStudent.email
     ) {
       alert("Please fill in all required fields.");
@@ -316,7 +317,7 @@ const StudentsList = () => {
               {
                 value: sectionQuery,
                 onChange: handleSectionChange,
-                options: ["All Sections", "A", "B", "C"],
+                options: ["All Sections", "a", "b", "c"],
               },
             ].map((dropdown, index) => (
               <select

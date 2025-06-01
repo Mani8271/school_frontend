@@ -103,7 +103,7 @@ const BusList = () => {
   // Edit Bus Handler
   const handleEditBus = (index) => {
     setEditIndex(index);
-    setFormData(allbuses[index]);
+    setFormData(allbuses?.find((item) => item?._id === index));
     handleOpenModal();
   };
 
@@ -115,7 +115,7 @@ const BusList = () => {
 
   const handleDeleteBus = (index) => {
     const isConfirmed = window.confirm("Are you sure you want to delete this bus?");
-    const id = allbuses?.[index]?._id
+    const id = allbuses?.find((item) => item?._id === index)
     if (isConfirmed) {
       if (id) {
         dispatch(
@@ -154,10 +154,11 @@ const BusList = () => {
   console.log("filteredBuses", filteredBuses)
 
   // Pagination logic
-  const totalPages = Math.ceil(allbuses.length / entriesCount);
+  const totalPages = searchQuery ? Math.ceil(filteredBuses.length / entriesCount) : Math.ceil(allbuses.length / entriesCount);
   const startIndex = (currentPage - 1) * entriesCount;
   const endIndex = startIndex + entriesCount;
   const currentBuses = allbuses.slice(startIndex, endIndex);
+  const filteredcurrentBuses = filteredBuses.slice(startIndex, endIndex);
   console.log('i am currenrbusse', currentBuses)
   const handleEntriesChange = (e) => {
     setEntriesCount(Number(e.target.value));
@@ -249,14 +250,14 @@ const BusList = () => {
                     <IconButton
                       aria-label="edit"
                       color="primary"
-                      onClick={() => handleEditBus(index)}
+                      onClick={() => handleEditBus(bus?._id)}
                     >
                       <Edit />
                     </IconButton>
                     <IconButton
                       aria-label="delete"
                       color="error"
-                      onClick={() => handleDeleteBus(index)}
+                      onClick={() => handleDeleteBus(bus?._id)}
                     >
                       <Delete />
                     </IconButton>
@@ -275,8 +276,8 @@ const BusList = () => {
             ) : null}
 
             {/* search */}
-            {searchQuery ? currentBuses.length > 0 ? (
-              currentBuses?.map((bus, index) => (
+            {searchQuery ? filteredcurrentBuses.length > 0 ? (
+              filteredcurrentBuses?.map((bus, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border border-gray-300">{bus.busNumber}</td>
                   <td className="px-4 py-2 border border-gray-300">{bus.busModel}</td>
@@ -286,14 +287,14 @@ const BusList = () => {
                     <IconButton
                       aria-label="edit"
                       color="primary"
-                      onClick={() => handleEditBus(index)}
+                      onClick={() => handleEditBus(bus?._id)}
                     >
                       <Edit />
                     </IconButton>
                     <IconButton
                       aria-label="delete"
                       color="error"
-                      onClick={() => handleDeleteBus(index)}
+                      onClick={() => handleDeleteBus(bus?._id)}
                     >
                       <Delete />
                     </IconButton>
